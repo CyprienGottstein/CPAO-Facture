@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+
+        <!-- CSS section -->
+        <link rel="stylesheet" type="text/css" href="lib/css/bootstrap/bootstrap.min.css">
+
+        <!-- Javascript section -->
+        <script type="text/javascript" src="lib/js/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/js/bootstrap/bootstrap.min.js"></script>
+        <script type="text/javascript" src="lib/js/knockout/knockout.js"></script>
+        <script type="text/javascript" src="lib/js/lodash/lodash.min.js"></script>
+
+        <!-- Application section -->
+        <script type="text/javascript" src="app/controller/activityController.js"></script>
+        <script type="text/javascript" src="app/ajax.js"></script>
+        <script type="text/javascript" src="app/model.js"></script>
+        <script type="text/javascript" src="app/app.js"></script>
+
+        <title>CPAO14 - Logiciel de facturation</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand">CPAO 14 - Logiciel de facturation</a>
+                </div>
+                <!--<ul class="nav nav-tabs">-->
+                <ul class="nav navbar-nav">
+                    <li class="active"><a data-toggle="tab" href="#activity">Activités</a></li>
+                    <li><a data-toggle="tab" href="#adherent">Adhérents</a></li>
+                    <li><a data-toggle="tab" href="#paiement">Paiements</a></li>
+                    <li><a data-toggle="tab" href="#recap">Récapitulatif</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="tab-content" style="padding:40px 15px;">
+            <div id="activity" class="tab-pane active">
+                <div class="container">
+                    <div class="row">
+                        <h1>Gestion des activités</h1>
+                        <p data-bind="text: test ">
+                    </div>                    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>season</th>
+                                <th>label</th>
+                                <th>licence</th>
+                                <th>cotisation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- ko foreach : controller.activity.activities -->
+                            <tr>
+                                <td data-bind="text : $data.id"></td>
+                                <td data-bind="text : $data.season"></td>
+                                <td data-bind="text : $data.label"></td>
+                                <td data-bind="text : $data.licenceCost"></td>
+                                <td data-bind="text : $data.cotisationCost"></td>
+                            </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+
+                    
+                </div>
+            </div>
+            <div id="adherent" class="tab-pane fade">
+                <div class="container">
+                    <div class="row">
+                        <h1>Gestion des adhérents et de leur foyers</h1>
+                    </div>
+                    <div class="row">
+                        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="paiement" class="tab-pane fade">
+                <div class="container">
+                    <div class="row">
+                        <h1>Gestion des Paiements</h1>
+                    </div>
+                </div>
+            </div>
+            <div id="recap" class="tab-pane fade">
+                <div class="container">
+                    <div class="row">
+                        <h1>Recapitulatif</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
