@@ -21,9 +21,13 @@ function AppViewModel() {
 
 $(window).on('load', function () {
 // Activates knockout.js
-    var appViewModel = new AppViewModel()
+    var appViewModel = new AppViewModel();
     ko.applyBindings(appViewModel);
     
-    appViewModel.ajax.loadActivitiesBySeason(2016);
+    var callback = function() {
+        appViewModel.ajax.loadActivitiesBySeason(appViewModel.model.season());
+    };
+    appViewModel.ajax.getCurrentSeason(callback);
+    
 
 });

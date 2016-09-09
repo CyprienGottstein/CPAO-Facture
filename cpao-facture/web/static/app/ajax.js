@@ -19,6 +19,17 @@ function Ajax(root) {
     self.static.defaultHeader.dataType = "text";
 //    self.static.defaultHeader.crossDomain = true;
 
+    self.getCurrentSeason = function (callback) {
+        
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/season/current";
+
+        $.ajax(header).done(function (data) {
+            root.model.setSeason(JSON.parse(data));
+            callback();
+        });
+    };
+
     self.loadActivitiesBySeason = function (season) {
         
         var data = { season : season };
