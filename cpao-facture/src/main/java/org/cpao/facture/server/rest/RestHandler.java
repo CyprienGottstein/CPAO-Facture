@@ -13,6 +13,7 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -21,6 +22,22 @@ import io.vertx.ext.web.RoutingContext;
 public class RestHandler {
 
     private Vertx vertx;
+    private int currentSeason = 2016;
+    
+    public RestHandler() {
+        
+        LocalDateTime current = LocalDateTime.now();
+        
+        final int year = current.getYear();
+        final int month = current.getMonthValue();
+        
+        if (month < 9) {
+            currentSeason = year - 1;
+        } else {
+            currentSeason = year;
+        }
+        
+    }
 
     public Vertx getVertx() {
         return vertx;
@@ -29,6 +46,13 @@ public class RestHandler {
     public void setVertx(Vertx vertx) {
         this.vertx = vertx;
     }
+    
+    public void getCurrentSeason(RoutingContext routingContext) {
+        
+        HttpServerResponse response = routingContext.response();
+        response.end(new JsonObject().put("season", currentSeason).encode());
+    }
+            
 
     public void activityLoadBySeason(RoutingContext routingContext) {
 

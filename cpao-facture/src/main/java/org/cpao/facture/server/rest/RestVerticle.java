@@ -6,11 +6,9 @@
 package org.cpao.facture.server.rest;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
 /**
@@ -52,6 +50,8 @@ public class RestVerticle extends AbstractVerticle {
 ////            response.end("Hello World from Vert.x-Web!");
 //        });
 //        
+
+        dynamicRouter.route("/season/current").handler(handler::getCurrentSeason);
         dynamicRouter.route("/activity/load/season").handler(handler::activityLoadBySeason);
         restServer.requestHandler(dynamicRouter::accept).listen(10000);
 
