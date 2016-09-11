@@ -15,6 +15,8 @@ import io.vertx.core.json.JsonObject;
 public interface ActivityDao {
     
     public int save(JsonObject activity);
+    public int remove(int id);
+    public int update(int id, JsonObject activity);
     public JsonArray loadBySeason(int season);
     
 }

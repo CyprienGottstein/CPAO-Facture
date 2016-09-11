@@ -39,27 +39,21 @@ public class RestVerticle extends AbstractVerticle {
                     routingContext.next();
                 });
 
-//
-//        dynamicRouter.route().handler(routingContext -> {
-//
-////            // This handler will be called for every request
-////            HttpServerResponse response = routingContext.response();
-////            response.putHeader("content-type", "text/plain");
-////
-////            // Write to the response and end it
-////            response.end("Hello World from Vert.x-Web!");
-//        });
-//        
-
         dynamicRouter.route("/season/current").handler(handler::getCurrentSeason);
         dynamicRouter.route("/activity/load/season").handler(handler::activityLoadBySeason);
+        dynamicRouter.route("/activity/save").handler(handler::activitySave);
+        dynamicRouter.route("/activity/remove").handler(handler::activityRemove);
+        dynamicRouter.route("/activity/update").handler(handler::activityUpdate);
         restServer.requestHandler(dynamicRouter::accept).listen(10000);
+        
+        
 
         HttpServer staticServer = vertx.createHttpServer();
         Router staticRouter = Router.router(vertx);
 
         StaticHandler staticHandler = StaticHandler.create();
         staticHandler.setWebRoot("web/static/");
+        staticHandler.setCachingEnabled(false);
 
         staticRouter.route().handler(routingContext -> {
             System.out.println("Request received on : " + routingContext.normalisedPath());

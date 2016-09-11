@@ -75,12 +75,12 @@ public class DatabaseScript {
             Statement s = c.createStatement();
 
             final int i = s.executeUpdate("CREATE SCHEMA CPAO AUTHORIZATION \"root\"\n"
-                    + "        CREATE TABLE ACTIVITY(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), LICENCE_COST DECIMAL, COTISATION_COST DECIMAL, SEASON INTEGER)\n"
+                    + "        CREATE TABLE ACTIVITY(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), LICENCE_COST DOUBLE, COTISATION_COST DOUBLE, SEASON INTEGER)\n"
                     + "        CREATE TABLE ADHERENT(ID INTEGER PRIMARY KEY, HOME INTEGER, FIRSTNAME VARCHAR(100), LASTNAME VARCHAR(100))\n"
                     + "        CREATE TABLE HOME(ID INTEGER PRIMARY KEY, LABEL VARCHAR(100))\n"
                     + "        CREATE TABLE HOME_ADHERENT(ID_HOME INTEGER, ID_ADHERENT INTEGER)\n"
-                    + "        CREATE TABLE INSURANCE(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), INSURANCE_COST DECIMAL, SEASON INTEGER)\n"
-                    + "        CREATE TABLE MAGAZINE(SEASON INTEGER PRIMARY KEY, MAGAZINE_COST DECIMAL)\n"
+                    + "        CREATE TABLE INSURANCE(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), INSURANCE_COST DOUBLE, SEASON INTEGER)\n"
+                    + "        CREATE TABLE MAGAZINE(SEASON INTEGER PRIMARY KEY, MAGAZINE_COST DOUBLE)\n"
                     + "        CREATE TABLE ACTIVITY_ADHERENT(ID_ACTIVITY INTEGER, ID_ADHERENT INTEGER, ID_INSURANCE INTEGER, MAGAZINE BOOLEAN, TEACHER BOOLEAN, OBSERVATOR BOOLEAN, FAMILY BOOLEAN)\n"
                     + "        CREATE SEQUENCE SEQ_ACTIVITY AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        CREATE SEQUENCE SEQ_INSURANCE AS INTEGER START WITH 0 INCREMENT BY 1\n"
@@ -112,8 +112,9 @@ public class DatabaseScript {
                         if (p.toString().endsWith("_0.txt")) {
                             System.out.println("path : " + p.toString());
                             final JsonObject activity = util.parseActivityToJson(p.toString());
-                            final String label = activity.getString("nom").split(" - ")[0];
-                            activity.put("nom", label);
+                            final String label = activity.getString("label").split(" - ")[0];
+                            activity.put("label", label);
+                            activity.put("season", 2016);
                             bus.send("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-save", activity);
                         }
                     });

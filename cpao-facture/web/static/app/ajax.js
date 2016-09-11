@@ -20,7 +20,7 @@ function Ajax(root) {
 //    self.static.defaultHeader.crossDomain = true;
 
     self.getCurrentSeason = function (callback) {
-        
+
         var header = _.cloneDeep(self.static.defaultHeader);
         header.url += "/season/current";
 
@@ -30,19 +30,71 @@ function Ajax(root) {
         });
     };
 
-    self.loadActivitiesBySeason = function (season) {
-        
-        var data = { season : season };
-        
+    self.activity = {};
+
+    self.activity.loadBySeason = function (season, callback) {
+
+        var data = {season: season};
+
         var header = _.cloneDeep(self.static.defaultHeader);
         header.url += "/activity/load/season";
         header.data = JSON.stringify(data);
-//        header.data = data;
 
         $.ajax(header).done(function (data) {
-            root.controller.activity.load(JSON.parse(data));
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
         });
 
+    };
+
+    self.activity.save = function (activity, callback) {
+
+        var data = {activity: activity};
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/activity/save";
+        header.data = JSON.stringify(data);
+
+        $.ajax(header).always(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
+
+    };
+
+    self.activity.remove = function (activity, callback) {
+
+        var data = {id: activity.id};
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/activity/remove";
+        header.data = JSON.stringify(data);
+
+        $.ajax(header).always(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
+
+    };
+
+    self.activity.update = function (id, activity, callback) {
+        var data = {
+            id: id,
+            activity: activity
+        };
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/activity/update";
+        header.data = JSON.stringify(data);
+
+        $.ajax(header).always(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
     }
 
 

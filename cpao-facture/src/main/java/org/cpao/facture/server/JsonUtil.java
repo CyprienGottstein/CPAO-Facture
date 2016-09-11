@@ -36,13 +36,22 @@ public class JsonUtil {
                         o.put(key, data[1]);
                         break;
                     case "nom":
-                        o.put(key, data[1]);
+                        o.put("label", data[1]);
                         break;
                     case "prix":
                         break;
                     default:
-                        o.put(data[1], Float.parseFloat(data[2]));
-                        break;
+                        switch (data[1]) {
+                            case "licence":
+                                o.put("licenceCost", data[2]);
+                                break;
+                            case "cotisation":
+                                o.put("cotisationCost", data[2]);
+                                break;
+                            default:
+                                o.put(data[1], data[2]);
+                                break;
+                        }
                 }
             });
 
@@ -50,7 +59,6 @@ public class JsonUtil {
             e.printStackTrace();
         }
 
-//        System.out.println(o.encodePrettily());
         return o;
     }
 

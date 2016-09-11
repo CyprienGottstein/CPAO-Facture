@@ -38,6 +38,51 @@ public class CentralVerticle extends AbstractVerticle {
             }
         });
         
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-activity-save", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message) {
+                
+                bus.send("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-save", message.body(), new Handler<AsyncResult<Message<JsonObject>>>() {
+                    
+                    @Override
+                    public void handle(AsyncResult<Message<JsonObject>> result) {
+                        message.reply(result.result().body());
+                    }
+                });
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-activity-remove", new Handler<Message<Integer>>() {
+            @Override
+            public void handle(Message<Integer> message) {
+                
+                bus.send("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-remove", message.body(), new Handler<AsyncResult<Message<JsonObject>>>() {
+                    
+                    @Override
+                    public void handle(AsyncResult<Message<JsonObject>> result) {
+                        message.reply(result.result().body());
+                    }
+                });
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-activity-update", new Handler<Message<Integer>>() {
+            @Override
+            public void handle(Message<Integer> message) {
+                
+                bus.send("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-update", message.body(), new Handler<AsyncResult<Message<JsonObject>>>() {
+                    
+                    @Override
+                    public void handle(AsyncResult<Message<JsonObject>> result) {
+                        message.reply(result.result().body());
+                    }
+                });
+                
+            }
+        });
+        
     }
     
 }

@@ -28,17 +28,59 @@ public class ActivityDaoImpl implements ActivityDao {
     public int save(JsonObject activity) {
         
         try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+            
+            System.out.println("Saving : " + activity.encodePrettily());
 
             final Statement s = c.createStatement();
             
             final int result = s.executeUpdate("INSERT INTO CPAO.ACTIVITY (ID, LABEL, LICENCE_COST, COTISATION_COST, SEASON) VALUES ( "
                     + "NEXT VALUE FOR CPAO.SEQ_ACTIVITY, "
-                    + "'" + activity.getString("nom") + "', "
-                    + activity.getFloat("licence") + ", "
-                    + activity.getFloat("cotisation") + ","
-                    + " 2016) ");
+                    + "'" + activity.getString("label") + "', "
+                    + Float.parseFloat(activity.getString("licenceCost")) + ", "
+                    + Float.parseFloat(activity.getString("cotisationCost")) + ","
+                    + activity.getInteger("season") + ")");
             
              return result;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
+        }
+        
+    }
+    
+    @Override
+    public int remove(int id) {
+        
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+            
+            final int result = s.executeUpdate("DELETE FROM CPAO.ACTIVITY WHERE ID = " + id);
+            
+            return result;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
+        }
+        
+    }
+    
+    @Override
+    public int update(int id, JsonObject activity) {
+        
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+            
+            final int result = s.executeUpdate("UPDATE CPAO.ACTIVITY SET SEASON = " + activity.getInteger("season") + ","
+            + "LABEL = '" + activity.getString("label") + "',"
+            + "LICENCE_COST = " + Float.parseFloat(activity.getString("licenceCost")) + ","
+            + "COTISATION_COST = " + Float.parseFloat(activity.getString("cotisationCost"))
+            + " WHERE ID = " + id);
+            
+            return result;
 
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);

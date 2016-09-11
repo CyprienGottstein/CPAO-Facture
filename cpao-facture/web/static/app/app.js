@@ -12,22 +12,23 @@ function AppViewModel() {
     var self = this;
     self.controller = {};
     self.controller.activity = new ActivityController(self);
-    
+
     self.ajax = new Ajax(self);
     self.model = new Model(self);
-    self.test = "MERDE";
 
-};
+}
+;
 
 $(window).on('load', function () {
 // Activates knockout.js
     var appViewModel = new AppViewModel();
-    ko.applyBindings(appViewModel);
-    
-    var callback = function() {
-        appViewModel.ajax.loadActivitiesBySeason(appViewModel.model.season());
+
+    ko.applyBindingsWithValidation(appViewModel, { messageTemplate : "validationTemplate"});
+
+    var callback = function () {
+        appViewModel.controller.activity.loadBySeason();
     };
     appViewModel.ajax.getCurrentSeason(callback);
-    
+
 
 });

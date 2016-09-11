@@ -31,7 +31,35 @@ public class ActivityDaoVerticle extends AbstractVerticle {
                 final JsonObject activity = message.body();
                 final int result = dao.save(activity);
                 
-                message.reply(result);
+                final JsonObject o = new JsonObject().put("result", result);
+                message.reply(o);
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-remove", new Handler<Message<Integer>>() {
+            @Override
+            public void handle(Message<Integer> message){
+                
+                final int id = message.body();
+                final int result = dao.remove(id);
+                
+                final JsonObject o = new JsonObject().put("result", result);
+                message.reply(o);
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-update", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message){
+                
+                final int id = message.body().getInteger("id");
+                final JsonObject activityData = message.body().getJsonObject("activity");
+                final int result = dao.update(id, activityData);
+                
+                final JsonObject o = new JsonObject().put("result", result);
+                message.reply(o);
                 
             }
         });

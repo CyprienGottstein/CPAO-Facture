@@ -23,20 +23,20 @@ public class RestHandler {
 
     private Vertx vertx;
     private int currentSeason = 2016;
-    
+
     public RestHandler() {
-        
+
         LocalDateTime current = LocalDateTime.now();
-        
+
         final int year = current.getYear();
         final int month = current.getMonthValue();
-        
+
         if (month < 9) {
             currentSeason = year - 1;
         } else {
             currentSeason = year;
         }
-        
+
     }
 
     public Vertx getVertx() {
@@ -46,13 +46,12 @@ public class RestHandler {
     public void setVertx(Vertx vertx) {
         this.vertx = vertx;
     }
-    
+
     public void getCurrentSeason(RoutingContext routingContext) {
-        
+
         HttpServerResponse response = routingContext.response();
         response.end(new JsonObject().put("season", currentSeason).encode());
     }
-            
 
     public void activityLoadBySeason(RoutingContext routingContext) {
 
@@ -67,7 +66,7 @@ public class RestHandler {
             @Override
             public void handle(AsyncResult<Message<JsonArray>> result) {
                 HttpServerResponse response = routingContext.response();
-                if (result.failed()){
+                if (result.failed()) {
                     response.setStatusCode(500);
                     response.end();
                 } else {
@@ -75,6 +74,76 @@ public class RestHandler {
                 }
             }
         });
+    }
+
+    public void activitySave(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final JsonObject activity = body.getJsonObject("activity");
+
+        System.out.println("Saving activity : " + activity.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-activity-save", activity, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+
+    public void activityRemove(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Removing activity with id : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-activity-remove", id, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+    
+    public void activityUpdate(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+        final JsonObject data = body.getJsonObject("activity");
+
+        System.out.println("Updating activity with id : " + id + " with following data : " + data.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-activity-update", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
     }
 
 }

@@ -9,11 +9,15 @@ and open the template in the editor.
 
         <!-- CSS section -->
         <link rel="stylesheet" type="text/css" href="lib/css/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="lib/css/facture.css">
 
         <!-- Javascript section -->
         <script type="text/javascript" src="lib/js/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="lib/js/bootstrap/bootstrap.min.js"></script>
         <script type="text/javascript" src="lib/js/knockout/knockout.js"></script>
+        <script type="text/javascript" src="lib/js/knockout/ko-utils.js"></script>
+        <script type="text/javascript" src="lib/js/knockout/knockout.validation.min.js"></script>
+
         <script type="text/javascript" src="lib/js/lodash/lodash.min.js"></script>
 
         <!-- Application section -->
@@ -48,7 +52,6 @@ and open the template in the editor.
                 <div class="container">
                     <div class="row">
                         <h1>Gestion des activités</h1>
-                        <p data-bind="text: test ">
                     </div>
                     <table class="table">
                         <thead>
@@ -70,8 +73,8 @@ and open the template in the editor.
                                 <td data-bind="text : $data.licenceCost"></td>
                                 <td data-bind="text : $data.cotisationCost"></td>
                                 <td>
-                                    <button type="button" class="btn btn-default btn-md"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
-                                    <button type="button" class="btn btn-default btn-md"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                                    <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleEditModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+                                    <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleRemoveModal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                                 </td>
                             </tr>
                             <!-- /ko -->
@@ -82,7 +85,7 @@ and open the template in the editor.
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <button type="button" class="btn btn-default btn-md" data-toggle="modal" data-target="#activityModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                    <button type="button" class="btn btn-default btn-md" data-bind="click:controller.activity.toggleModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -115,26 +118,97 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
-        
-        <!-- Modal section -->
 
-        <div id="activityModal"  class="modal fade" tabindex="-1" role="dialog">
+        <!-- Modal section -->
+        <!-- Activity Section -->
+        <!-- New activity modal -->
+        <div id="activityModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.activity.modal.show">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-bind="click:controller.activity.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Saisie d'une activité</h4>
+                    </div>
+                    <div class="modal-body">   
+                        <div class="row">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="activitySeason" class="col-sm-2 control-label">Saison</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="activitySeason"
+                                               placeholder="Saison" data-bind="textInput:controller.activity.modal.selectedSeason">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="activityLabel" class="col-sm-2 control-label">Description</label>
+                                    <div class="col-sm-10">
+                                        <!--<input type="text" class="form-control" id="exampleInputPassword3" placeholder="Description">-->
+                                        <textarea class="form-control" id="activityLabel" rows="3"
+                                                  placeholder="Description (200 caractères max)" data-bind="textInput:controller.activity.modal.selectedLabel">
+                                        </textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="activityLicenceCost" class="col-sm-2 control-label">Licence</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="activityLicenceCost"
+                                               placeholder="Prix de la licence" data-bind="textInput:controller.activity.modal.selectedLicenceCost">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="activityCotisationCost" class="col-sm-2 control-label">Cotisation</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="activityCotisationCost"
+                                               placeholder="Prix de la cotisation" data-bind="textInput:controller.activity.modal.selectedCotisationCost, validationOptions: {messageTemplate: 'validationTemplate'}">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-body modal-body-split">
+                        <!-- ko if : controller.activity.modal.failure -->
+                        <p class="ajax-error">La sauvegarde de l'activité a échoué.</p>
+                        <!-- /ko -->
+                        <!-- ko if : controller.activity.modal.active -->
+                        <img class="img-centered" src="img/loading.gif" alt="loading">
+                        <!-- /ko -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bind="click:controller.activity.toggleModal">Fermer</button>
+                        <button type="button" class="btn btn-primary" data-bind="enable: controller.activity.modal.activityValidator.isValid(), click:controller.activity.modal.save">Sauvegarder</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Remove activity modal -->
+        <div id="activityRemoveModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.activity.removeModal.show">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Saisie d'une activité</h4>
+                        <button type="button" class="close" data-bind="click:controller.activity.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Suppression d'une activité</h4>
                     </div>
                     <div class="modal-body">
-                        <p>One fine body.</p>
+                        <p data-bind="html:controller.activity.removeModal.label"></p>
+                        <!-- ko if : controller.activity.removeModal.active -->
+                        <img class="img-centered" src="img/loading.gif" alt="loading">
+                        <!-- /ko -->
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-default" data-bind="click:controller.activity.removeModal.toggle">Fermer</button>
+                        <button type="button" class="btn btn-primary" data-bind="click:controller.activity.removeModal.remove">Supprimer</button>
                     </div>
-                </div> /.modal-content 
-            </div> /.modal-dialog 
-        </div> /.modal 
+                </div>
+            </div>
+        </div>
 
+        <!-- Template section -->
+        <!-- Validation Error Template -->
+        <script type="text/html" id="validationTemplate">
+            <div class='btn-warning form-control no-height-limitation' data-bind='visible: field.isModified() && !field.isValid()'>
+                <span><span class="validation-message-error" data-bind='validationMessage: field'></span><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></span>
+            </div>
+        </script>
     </body>
 </html>
