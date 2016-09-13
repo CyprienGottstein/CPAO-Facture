@@ -119,4 +119,34 @@ public class ActivityDaoImpl implements ActivityDao {
         
     }
     
+    @Override
+    public JsonArray loadAll(){
+        
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+            
+            final ResultSet result = s.executeQuery("SELECT * FROM CPAO.ACTIVITY ORDER BY SEASON");
+            final JsonArray array = new JsonArray();
+            
+            while (result.next()){
+                final Activity activity = new Activity();
+                activity.setId(result.getInt("id"));
+                activity.setSeason(result.getInt("SEASON"));
+                activity.setLabel(result.getString("LABEL"));
+                activity.setLicenceCost(result.getFloat("LICENCE_COST"));
+                activity.setCotisationCost(result.getFloat("COTISATION_COST"));
+                
+                array.add(activity);
+            }
+            
+            return array;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+            return new JsonArray();
+        }
+        
+    }
+    
 }

@@ -9,11 +9,14 @@ and open the template in the editor.
 
         <!-- CSS section -->
         <link rel="stylesheet" type="text/css" href="lib/css/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="lib/css/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" type="text/css" href="lib/css/facture.css">
 
         <!-- Javascript section -->
         <script type="text/javascript" src="lib/js/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/js/moment/moment.min.js"></script>
         <script type="text/javascript" src="lib/js/bootstrap/bootstrap.min.js"></script>
+        <script type="text/javascript" src="lib/js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="lib/js/knockout/knockout.js"></script>
         <script type="text/javascript" src="lib/js/knockout/ko-utils.js"></script>
         <script type="text/javascript" src="lib/js/knockout/knockout.validation.min.js"></script>
@@ -21,7 +24,10 @@ and open the template in the editor.
         <script type="text/javascript" src="lib/js/lodash/lodash.min.js"></script>
 
         <!-- Application section -->
+        <script type="text/javascript" src="app/util/yearPicker.js"></script>
         <script type="text/javascript" src="app/controller/activityController.js"></script>
+        <script type="text/javascript" src="app/controller/insuranceController.js"></script>
+        <script type="text/javascript" src="app/controller/seasonController.js"></script>
         <script type="text/javascript" src="app/ajax.js"></script>
         <script type="text/javascript" src="app/model.js"></script>
         <script type="text/javascript" src="app/app.js"></script>
@@ -32,65 +38,137 @@ and open the template in the editor.
     </head>
     <body>
 
-        <nav class="navbar navbar-inverse navbar-fixed-top">
+        <nav class="navbar navbar-fixed-top header-cpao">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand">CPAO 14 - Logiciel de facturation</a>
+                    <a class="navbar-brand header-cpao-brand">CPAO 14 - Logiciel de facturation</a>
                 </div>
-                <!--<ul class="nav nav-tabs">-->
                 <ul class="nav navbar-nav">
-                    <li class="active"><a data-toggle="tab" href="#activity">Activités</a></li>
+                    <li class="active"><a data-toggle="tab" href="#activityTab">Activités</a></li>
                     <li><a data-toggle="tab" href="#adherent">Adhérents</a></li>
                     <li><a data-toggle="tab" href="#paiement">Paiements</a></li>
                     <li><a data-toggle="tab" href="#recap">Récapitulatif</a></li>
                 </ul>
+                <form class="navbar-form navbar-left" role="search">
+                    <ul class="nav nav-pills">
+                        <li role="presentation" class="dropdown">
+                            <button class="dropdown-toggle btn btn-default" data-toggle="dropdown" role="button" data-bind="html:controller.season.currentModeLabel"></button>
+                            <ul class="dropdown-menu">
+                                <!--ko foreach : controller.season.modes --> 
+                                <li><a data-bind="text:$data.label, value:$data.id, click:$data.select"></a></li>
+                                <!--/ko--> 
+                            </ul>
+                        </li>
+                    </ul>
+                </form>
+                <!-- ko if : controller.season.yearpicker.show -->
+                <form class="navbar-form navbar-left" role="search">
+                    <button class="btn btn-default" data-bind="click:controller.season.yearpicker.decrement"><span class="glyphicon glyphicon-chevron-left"></span></button>
+                    <button class="btn btn-info"><span data-bind="text:controller.season.yearpicker.current"></span></button>
+                    <button class="btn btn-default" data-bind="click:controller.season.yearpicker.increment"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                </form>
+                <!-- /ko -->
             </div>
         </nav>
 
-        <div class="tab-content" style="padding:40px 15px;">
-            <div id="activity" class="tab-pane active">
-                <div class="container">
-                    <div class="row">
-                        <h1>Gestion des activités</h1>
+        <div class="tab-content">
+            <div id="activityTab" class="tab-pane fade in active">
+                <div class="tab-content">
+                    <nav class="navbar navbar-default navbar-lower" role="navigation">
+                        <div class="container">
+                            <div class="collapse navbar-collapse collapse-buttons">
+                                <ul class="nav navbar-nav">
+                                    <li class="active"><a data-toggle="tab" href="#activitySubTab">Activités</a></li>
+                                    <li><a data-toggle="tab" href="#insuranceSubTab">Assurances</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                    <div id="activitySubTab" class="tab-pane fade in active">
+                        <div class="container">
+                            <div class="row">
+                                <h1>Gestion des activités</h1>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Saison</th>
+                                        <th>Description</th>
+                                        <th>Licence</th>
+                                        <th>Cotisation</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- ko foreach : controller.activity.activities -->
+                                    <tr>
+                                        <td data-bind="text : $data.id"></td>
+                                        <td data-bind="text : $data.season"></td>
+                                        <td data-bind="text : $data.label"></td>
+                                        <td data-bind="text : $data.licenceCost"></td>
+                                        <td data-bind="text : $data.cotisationCost"></td>
+                                        <td>
+                                            <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleEditModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+                                            <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleRemoveModal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <button type="button" class="btn btn-default btn-md" data-bind="click:controller.activity.toggleModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>id</th>
-                                <th>season</th>
-                                <th>label</th>
-                                <th>licence</th>
-                                <th>cotisation</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- ko foreach : controller.activity.activities -->
-                            <tr>
-                                <td data-bind="text : $data.id"></td>
-                                <td data-bind="text : $data.season"></td>
-                                <td data-bind="text : $data.label"></td>
-                                <td data-bind="text : $data.licenceCost"></td>
-                                <td data-bind="text : $data.cotisationCost"></td>
-                                <td>
-                                    <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleEditModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
-                                    <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleRemoveModal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                                </td>
-                            </tr>
-                            <!-- /ko -->
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <button type="button" class="btn btn-default btn-md" data-bind="click:controller.activity.toggleModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
+                    <div id="insuranceSubTab" class="tab-pane fade">
+                        <div class="container">
+                            <div class="row">
+                                <h1>Gestion des assurances</h1>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Saison</th>
+                                            <th>Description</th>
+                                            <th>Coût</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- ko foreach : controller.insurance.insurances -->
+                                        <tr>
+                                            <td data-bind="text : $data.id"></td>
+                                            <td data-bind="text : $data.season"></td>
+                                            <td data-bind="text : $data.label"></td>
+                                            <td data-bind="text : $data.insuranceCost"></td>
+                                            <td>
+                                                <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleEditModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+                                                <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleRemoveModal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                                            </td>
+                                        </tr>
+                                        <!-- /ko -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <button type="button" class="btn btn-default btn-md" data-bind="click:controller.insurance.toggleModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="adherent" class="tab-pane fade">
@@ -134,10 +212,21 @@ and open the template in the editor.
                             <form class="form-horizontal">
                                 <div class="form-group">
                                     <label for="activitySeason" class="col-sm-2 control-label">Saison</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="activitySeason"
-                                               placeholder="Saison" data-bind="textInput:controller.activity.modal.selectedSeason">
-                                    </div>
+                                    <span class="col-sm-4">
+                                        <span class="btn btn-default glyphicon glyphicon-chevron-left" data-bind="click:controller.activity.modal.yearpicker.decrement"></span>
+                                        <span class="btn btn-info" data-bind="text:controller.activity.modal.yearpicker.current"> 2016 </span>
+                                        <span class="btn btn-default glyphicon glyphicon-chevron-right" data-bind="click:controller.activity.modal.yearpicker.increment"></span>
+                                    </span>
+                                    <!--<div class="col-sm-4">-->
+                                    <!--                                        <div class="input-group date">-->
+                                    <!--</div>-->
+                                    <!--                                        <div class="input-group date" id="datetimepicker12">
+                                                                                <input type='text' class="form-control" />
+                                                                                <span class="input-group-addon">
+                                                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                                                </span>
+                                                                            </div>-->
+                                    <!--</div>-->
                                 </div>
                                 <div class="form-group">
                                     <label for="activityLabel" class="col-sm-2 control-label">Description</label>
@@ -165,6 +254,7 @@ and open the template in the editor.
                             </form>
                         </div>
                     </div>
+                    <!-- ko if : controller.activity.modal.failure() || controller.activity.modal.active -->
                     <div class="modal-body modal-body-split">
                         <!-- ko if : controller.activity.modal.failure -->
                         <p class="ajax-error">La sauvegarde de l'activité a échoué.</p>
@@ -173,6 +263,7 @@ and open the template in the editor.
                         <img class="img-centered" src="img/loading.gif" alt="loading">
                         <!-- /ko -->
                     </div>
+                    <!-- /ko -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-bind="click:controller.activity.toggleModal">Fermer</button>
                         <button type="button" class="btn btn-primary" data-bind="enable: controller.activity.modal.activityValidator.isValid(), click:controller.activity.modal.save">Sauvegarder</button>
@@ -198,6 +289,84 @@ and open the template in the editor.
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-bind="click:controller.activity.removeModal.toggle">Fermer</button>
                         <button type="button" class="btn btn-primary" data-bind="click:controller.activity.removeModal.remove">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Insurance Section -->
+        <!-- New insurance modal -->
+        <div id="InsuranceInputModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.insurance.modal.show">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-bind="click:controller.insurance.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Saisie d'un mode d'assurance</h4>
+                    </div>
+                    <div class="modal-body">   
+                        <div class="row">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Saison</label>
+                                    <span class="col-sm-4">
+                                        <span class="btn btn-default glyphicon glyphicon-chevron-left" data-bind="click:controller.insurance.modal.yearpicker.decrement"></span>
+                                        <span class="btn btn-info" data-bind="text:controller.insurance.modal.yearpicker.current"> 2016 </span>
+                                        <span class="btn btn-default glyphicon glyphicon-chevron-right" data-bind="click:controller.insurance.modal.yearpicker.increment"></span>
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="insuranceLabel" class="col-sm-2 control-label">Description</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="insuranceLabel" rows="3"
+                                                  placeholder="Description (200 caractères max)" data-bind="textInput:controller.insurance.modal.selectedLabel">
+                                        </textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="insuranceInsuranceCost" class="col-sm-2 control-label">Licence</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="insuranceInsuranceCost"
+                                               placeholder="Prix de la licence" data-bind="textInput:controller.insurance.modal.selectedInsuranceCost">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- ko if : controller.insurance.modal.failure() || controller.insurance.modal.active -->
+                    <div class="modal-body modal-body-split">
+                        <!-- ko if : controller.insurance.modal.failure -->
+                        <p class="ajax-error">La sauvegarde du mode d'assurance a échoué.</p>
+                        <!-- /ko -->
+                        <!-- ko if : controller.insurance.modal.active -->
+                        <img class="img-centered" src="img/loading.gif" alt="loading">
+                        <!-- /ko -->
+                    </div>
+                    <!-- /ko -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bind="click:controller.insurance.toggleModal">Fermer</button>
+                        <button type="button" class="btn btn-primary" data-bind="enable: controller.insurance.modal.insuranceValidator.isValid(), click:controller.insurance.modal.save">Sauvegarder</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Remove insurance modal -->
+        <div id="insuranceRemoveModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.insurance.removeModal.show">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-bind="click:controller.insurance.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Suppression d'un mode d'assurance</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p data-bind="html:controller.insurance.removeModal.label"></p>
+                        <!-- ko if : controller.insurance.removeModal.active -->
+                        <img class="img-centered" src="img/loading.gif" alt="loading">
+                        <!-- /ko -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bind="click:controller.insurance.removeModal.toggle">Fermer</button>
+                        <button type="button" class="btn btn-primary" data-bind="click:controller.insurance.removeModal.remove">Supprimer</button>
                     </div>
                 </div>
             </div>

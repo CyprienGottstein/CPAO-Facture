@@ -5,7 +5,7 @@
  */
 
 
-function ActivityController(root, seasonController) {
+function InsuranceController(root, seasonController) {
 
     // Safe pointer on self for model
     var self = this;
@@ -13,7 +13,7 @@ function ActivityController(root, seasonController) {
     self.root = root;
     self.season = seasonController;
 
-    self.activities = ko.observableArray();
+    self.insurances = ko.observableArray();
     
     self.updateBySeason = function () {
         self.reload();
@@ -26,8 +26,8 @@ function ActivityController(root, seasonController) {
     self.root.controller.season.subscribeToSeason(self.updateBySeason);
     self.root.controller.season.subscribeToMode(self.updateByMode);
     
-    self.modal = new NewActivityModal(root, self, self.season);
-    self.removeModal = new RemoveActivityModal(root, self);
+    self.modal = new NewInsuranceModal(root, self, self.season);
+    self.removeModal = new RemoveInsuranceModal(root, self);
 
     self.toggleModal = function () {
         self.modal.toggle();
@@ -36,29 +36,29 @@ function ActivityController(root, seasonController) {
     self.loadBySeason = function () {
 
         var callback = function (data) {
-            var array = self.activities();
+            var array = self.insurances();
             array = [];
-            data.forEach(function (activity) {
-                array.push(new ActivityModel(root, self, activity));
+            data.forEach(function (insurance) {
+                array.push(new InsuranceModel(root, self, insurance));
             });
-            self.activities(array);
+            self.insurances(array);
         };
 
-        root.ajax.activity.loadBySeason(self.season.yearpicker.current(), callback);
+        root.ajax.insurance.loadBySeason(self.season.yearpicker.current(), callback);
     };
     
     self.loadAll = function () {
         
         var callback = function (data) {
-            var array = self.activities();
+            var array = self.insurances();
             array = [];
-            data.forEach(function (activity) {
-                array.push(new ActivityModel(root, self, activity));
+            data.forEach(function (insurance) {
+                array.push(new InsuranceModel(root, self, insurance));
             });
-            self.activities(array);
+            self.insurances(array);
         };
 
-        root.ajax.activity.loadAll(callback);
+        root.ajax.insurance.loadAll(callback);
         
     };
     
@@ -70,7 +70,7 @@ function ActivityController(root, seasonController) {
         }
     };
 
-    function ActivityModel($root, $parent, data) {
+    function InsuranceModel($root, $parent, data) {
         // Safe pointer on self for model
         var self = this;
         // Safe pointer on the root of the application to access other controlers
@@ -80,8 +80,7 @@ function ActivityController(root, seasonController) {
         self.id = data.id;
         self.season = data.season;
         self.label = data.label;
-        self.licenceCost = data.licenceCost;
-        self.cotisationCost = data.cotisationCost;
+        self.insuranceCost = data.insuranceCost;
 
         self.toggleRemoveModal = function () {
             $parent.removeModal.focus(self);
@@ -96,7 +95,7 @@ function ActivityController(root, seasonController) {
     }
     ;
 
-    function NewActivityModal($root, $parent, seasonController) {
+    function NewInsuranceModal($root, $parent, seasonController) {
 
         // Safe pointer on self for model
         var self = this;
@@ -110,7 +109,7 @@ function ActivityController(root, seasonController) {
 
         self.show = ko.observable(false);
 
-        $('#activityModal').on('hidden.bs.modal', function () {
+        $('#insuranceInputModal').on('hidden.bs.modal', function () {
             self.show(false);
             self.reset();
         });
@@ -123,42 +122,34 @@ function ActivityController(root, seasonController) {
         self.selectedLabel = ko.observable("")
                 .extend({required: {params: true, message: "Ce champ est obligatoire"}})
                 .extend({minLength: {params: 5, message: "La description de l'activité doit faire au moins 5 caractères."}});
-        self.selectedLicenceCost = ko.observable(0.0)
-                .extend({required: {params: true, message: "Ce champ est obligatoire"}})
-                .extend({number: {params: true, message: "Ce n'est pas un nombre"}})
-                .extend({min: {params: 0, message: "Le coût ne peut pas être négatif"}});
-        self.selectedCotisationCost = ko.observable(0.0)
+        self.selectedInsuranceCost = ko.observable(0.0)
                 .extend({required: {params: true, message: "Ce champ est obligatoire"}})
                 .extend({number: {params: true, message: "Ce n'est pas un nombre"}})
                 .extend({min: {params: 0, message: "Le coût ne peut pas être négatif"}});
 
-        self.activityValidator = ko.validatedObservable({
+        self.insuranceValidator = ko.validatedObservable({
             label: self.selectedLabel,
-            licenceCost: self.selectedLicenceCost,
-            cotisationCost: self.selectedCotisationCost
+            insuranceCost: self.selectedInsuranceCost
         });
 
         self.toggle = function () {
             self.show(!self.show());
         };
 
-        self.edit = function (activity) {
+        self.edit = function (insurance) {
             self.editing(true);
-            self.editingId(activity.id);
-            self.yearpicker.current(activity.season);
-            self.selectedLabel(activity.label);
-            self.selectedLicenceCost(activity.licenceCost);
-            self.selectedCotisationCost(activity.cotisationCost);
+            self.editingId(insurance.id);
+            self.yearpicker.current(insurance.season);
+            self.selectedLabel(insurance.label);
+            self.selectedInsuranceCost(insurance.insuranceCost);
         };
 
         self.reset = function () {
             self.yearpicker.current(self.season.yearpicker.current());
             self.selectedLabel("");
             self.selectedLabel.isModified(false);
-            self.selectedLicenceCost("");
-            self.selectedLicenceCost.isModified(false);
-            self.selectedCotisationCost("");
-            self.selectedCotisationCost.isModified(false);
+            self.selectedInsuranceCost("");
+            self.selectedInsuranceCost.isModified(false);
             self.active(false);
             self.failure(false);
             self.editing(false);
@@ -167,12 +158,11 @@ function ActivityController(root, seasonController) {
 
         self.save = function () {
 
-            var activity = {};
+            var insurance = {};
 
-            activity.season = _.clone(self.yearpicker.current());
-            activity.label = _.clone(self.selectedLabel());
-            activity.licenceCost = _.clone(self.selectedLicenceCost() + "");
-            activity.cotisationCost = _.clone(self.selectedCotisationCost() + "");
+            insurance.season = _.clone(self.yearpicker.current());
+            insurance.label = _.clone(self.selectedLabel());
+            insurance.insuranceCost = _.clone(self.selectedInsuranceCost() + "");
 
             var callback = function (data) {
 
@@ -191,9 +181,9 @@ function ActivityController(root, seasonController) {
             };
 
             if (self.editing()) {
-                root.ajax.activity.update(self.editingId(), activity, callback);
+                root.ajax.insurance.update(self.editingId(), insurance, callback);
             } else {
-                root.ajax.activity.save(activity, callback);
+                root.ajax.insurance.save(insurance, callback);
             }
             self.active(true);
 
@@ -202,7 +192,7 @@ function ActivityController(root, seasonController) {
     }
     ;
 
-    function RemoveActivityModal($root, $parent) {
+    function RemoveInsuranceModal($root, $parent) {
 
         // Safe pointer on self for model
         var self = this;
@@ -212,7 +202,7 @@ function ActivityController(root, seasonController) {
 
         self.show = ko.observable(false);
 
-        $('#activityRemoveModal').on('hidden.bs.modal', function () {
+        $('#insuranceRemoveModal').on('hidden.bs.modal', function () {
             self.show(false);
         });
 
@@ -221,23 +211,23 @@ function ActivityController(root, seasonController) {
         self.static = {};
         self.static.msg = {};
         self.static.msg.announce = {};
-        self.static.msg.announce.begin = "Vous êtes sur le point de supprimer l'activité : <label>";
+        self.static.msg.announce.begin = "Vous êtes sur le point de supprimer l'assurance : <label>";
         self.static.msg.announce.end = "</label>";
         self.static.msg.failure = {};
-        self.static.msg.failure.begin = "La suppression de l'activité : <label>";
+        self.static.msg.failure.begin = "La suppression de l'assurance : <label>";
         self.static.msg.failure.end = "</label> a echoué.";
 
 
-        self.activity = {};
+        self.insurance = {};
         self.label = ko.observable("");
 
         self.toggle = function () {
             self.show(!self.show());
         };
 
-        self.focus = function (activity) {
-            self.activity = activity;
-            self.label(self.static.msg.announce.begin + self.activity.label + self.static.msg.announce.end);
+        self.focus = function (insurance) {
+            self.insurance = insurance;
+            self.label(self.static.msg.announce.begin + self.insurance.label + self.static.msg.announce.end);
         };
 
         self.remove = function () {
@@ -245,27 +235,27 @@ function ActivityController(root, seasonController) {
 
                 if (typeof data !== "undefined") {
                     if (data.result === 1) {
-                        var array = self.parent.activities();
-                        _.remove(array, function (activity) {
-                            if (activity.id === self.activity.id) {
+                        var array = self.parent.insurances();
+                        _.remove(array, function (insurance) {
+                            if (insurance.id === self.insurance.id) {
                                 return true;
                             }
                             return false;
                         });
-                        self.parent.activities(array);
+                        self.parent.insurances(array);
                         self.toggle();
                     } else {
-                        self.label(self.static.msg.failure.begin + self.activity.label + self.static.msg.failure.end);
+                        self.label(self.static.msg.failure.begin + self.insurance.label + self.static.msg.failure.end);
                     }
                 } else {
-                    self.label(self.static.msg.failure.begin + self.activity.label + self.static.msg.failure.end);
+                    self.label(self.static.msg.failure.begin + self.insurance.label + self.static.msg.failure.end);
                 }
 
 
                 self.active(false);
             };
 
-            root.ajax.activity.remove(self.activity, callback);
+            root.ajax.insurance.remove(self.insurance, callback);
             self.active(true);
         };
 

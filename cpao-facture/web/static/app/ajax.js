@@ -25,8 +25,7 @@ function Ajax(root) {
         header.url += "/season/current";
 
         $.ajax(header).done(function (data) {
-            root.model.setSeason(JSON.parse(data));
-            callback();
+            callback(JSON.parse(data));
         });
     };
 
@@ -39,6 +38,19 @@ function Ajax(root) {
         var header = _.cloneDeep(self.static.defaultHeader);
         header.url += "/activity/load/season";
         header.data = JSON.stringify(data);
+
+        $.ajax(header).done(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
+
+    };
+    
+    self.activity.loadAll = function (callback) {
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/activity/load/all";
 
         $.ajax(header).done(function (data) {
             if (typeof callback !== "undefined") {
@@ -95,8 +107,89 @@ function Ajax(root) {
                 callback(JSON.parse(data));
             }
         });
+        
     }
+    
+    
+    self.insurance = {};
 
+    self.insurance.loadBySeason = function (season, callback) {
+
+        var data = {season: season};
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/insurance/load/season";
+        header.data = JSON.stringify(data);
+
+        $.ajax(header).done(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
+
+    };
+    
+    self.insurance.loadAll = function (callback) {
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/insurance/load/all";
+
+        $.ajax(header).done(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
+
+    };
+
+    self.insurance.save = function (insurance, callback) {
+
+        var data = {insurance: insurance};
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/insurance/save";
+        header.data = JSON.stringify(data);
+
+        $.ajax(header).always(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
+
+    };
+
+    self.insurance.remove = function (insurance, callback) {
+
+        var data = {id: insurance.id};
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/insurance/remove";
+        header.data = JSON.stringify(data);
+
+        $.ajax(header).always(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
+
+    };
+
+    self.insurance.update = function (id, insurance, callback) {
+        var data = {
+            id: id,
+            insurance: insurance
+        };
+
+        var header = _.cloneDeep(self.static.defaultHeader);
+        header.url += "/insurance/update";
+        header.data = JSON.stringify(data);
+
+        $.ajax(header).always(function (data) {
+            if (typeof callback !== "undefined") {
+                callback(JSON.parse(data));
+            }
+        });
+    }
 
 }
 ;

@@ -18,5 +18,6 @@ public interface ActivityDao {
     public int remove(int id);
     public int update(int id, JsonObject activity);
     public JsonArray loadBySeason(int season);
+    public JsonArray loadAll();
     
 }

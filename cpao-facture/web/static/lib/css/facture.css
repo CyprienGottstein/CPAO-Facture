@@ -8,6 +8,7 @@ and open the template in the editor.
     Author     : Cyprien
 */
 
+
 .img-centered {
     display: block;
     margin: 0 auto;
@@ -34,6 +35,44 @@ and open the template in the editor.
     height : auto;
 }
 
-div.form-control {
-    
+
+
+.header-cpao {
+    background-color: #dddddd;
+}
+
+.header-cpao-brand {
+    font-weight: bold;
+}
+
+
+
+
+body{
+  margin-top: 50px;
+}
+
+.affix {
+  top: 50px;
+  width:100%;
+}
+
+.divide-nav{
+  height: 50px;
+  background-color: #428bca;
+}
+
+.divide-text{
+    color:#fff;
+    line-height: 20px;
+    font-size:20px;
+    padding: 15px 0;
+}
+
+.navbar-form {
+   padding-left: 0;
+}
+
+.navbar-collapse{
+   padding-left:0; 
 }

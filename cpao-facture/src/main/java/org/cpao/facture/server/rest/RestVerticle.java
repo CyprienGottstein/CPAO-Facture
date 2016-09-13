@@ -40,10 +40,19 @@ public class RestVerticle extends AbstractVerticle {
                 });
 
         dynamicRouter.route("/season/current").handler(handler::getCurrentSeason);
+        
         dynamicRouter.route("/activity/load/season").handler(handler::activityLoadBySeason);
+        dynamicRouter.route("/activity/load/all").handler(handler::activityLoadAll);
         dynamicRouter.route("/activity/save").handler(handler::activitySave);
         dynamicRouter.route("/activity/remove").handler(handler::activityRemove);
         dynamicRouter.route("/activity/update").handler(handler::activityUpdate);
+        
+        dynamicRouter.route("/insurance/load/season").handler(handler::insuranceLoadBySeason);
+        dynamicRouter.route("/insurance/load/all").handler(handler::insuranceLoadAll);
+        dynamicRouter.route("/insurance/save").handler(handler::insuranceSave);
+        dynamicRouter.route("/insurance/remove").handler(handler::insuranceRemove);
+        dynamicRouter.route("/insurance/update").handler(handler::insuranceUpdate);
+        
         restServer.requestHandler(dynamicRouter::accept).listen(10000);
         
         

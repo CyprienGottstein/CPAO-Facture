@@ -5,6 +5,7 @@
  */
 package org.cpao.facture.server.dao.insurance;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -14,5 +15,9 @@ import io.vertx.core.json.JsonObject;
 public interface InsuranceDao {
     
     public int save(JsonObject insurance);
+    public int remove(int id);
+    public int update(int id, JsonObject activity);
+    public JsonArray loadBySeason(int season);
+    public JsonArray loadAll();
     
 }

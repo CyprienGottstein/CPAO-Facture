@@ -38,6 +38,21 @@ public class CentralVerticle extends AbstractVerticle {
             }
         });
         
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-activity-load-all", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message) {
+                
+                bus.send("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-load-all", null, new Handler<AsyncResult<Message<JsonArray>>>() {
+                    
+                    @Override
+                    public void handle(AsyncResult<Message<JsonArray>> result) {
+                        message.reply(result.result().body());
+                    }
+                });
+                
+            }
+        });
+        
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-activity-save", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message) {
@@ -81,6 +96,40 @@ public class CentralVerticle extends AbstractVerticle {
                 });
                 
             }
+        });
+        
+        
+        /**
+         * Insurance Redirection
+         */
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-load-bySeason", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-load-bySeason", message.body(), (AsyncResult<Message<JsonArray>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-load-all", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-load-all", null, (AsyncResult<Message<JsonArray>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-save", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-save", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-remove", (Message<Integer> message) -> {
+            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-remove", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-update", (Message<Integer> message) -> {
+            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-update", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
         });
         
     }

@@ -76,6 +76,17 @@ public class ActivityDaoVerticle extends AbstractVerticle {
                 
             }
         });
+        
+        bus.consumer("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-load-all", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message){
+                
+                final JsonArray array = dao.loadAll();
+                
+                message.reply(array);
+                
+            }
+        });
 
     }
 

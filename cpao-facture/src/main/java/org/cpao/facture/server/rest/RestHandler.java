@@ -75,6 +75,24 @@ public class RestHandler {
             }
         });
     }
+    
+    public void activityLoadAll(RoutingContext routingContext) {
+
+        System.out.println("Loading all activities !");
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-activity-load-all", null, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
 
     public void activitySave(RoutingContext routingContext) {
 
@@ -131,6 +149,114 @@ public class RestHandler {
         System.out.println("Updating activity with id : " + id + " with following data : " + data.encodePrettily());
 
         vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-activity-update", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+    
+    public void insuranceLoadBySeason(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int season = body.getInteger("season");
+
+        System.out.println("Loading all insurance for season : " + season);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-insurance-load-bySeason", body, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+    
+    public void insuranceLoadAll(RoutingContext routingContext) {
+
+        System.out.println("Loading all insurances !");
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-insurance-load-all", null, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+
+    public void insuranceSave(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final JsonObject insurance = body.getJsonObject("insurance");
+
+        System.out.println("Saving insurance : " + insurance.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-insurance-save", insurance, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+
+    public void insuranceRemove(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Removing insurance with id : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-insurance-remove", id, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+    
+    public void insuranceUpdate(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+        final JsonObject data = body.getJsonObject("insurance");
+
+        System.out.println("Updating insurance with id : " + id + " with following data : " + data.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-insurance-update", body, new Handler<AsyncResult<Message<JsonObject>>>() {
             @Override
             public void handle(AsyncResult<Message<JsonObject>> result) {
                 HttpServerResponse response = routingContext.response();
