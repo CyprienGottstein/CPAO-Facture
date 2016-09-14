@@ -14,18 +14,18 @@ function ActivityController(root, seasonController) {
     self.season = seasonController;
 
     self.activities = ko.observableArray();
-    
+
     self.updateBySeason = function () {
         self.reload();
     };
-    
-    self.updateByMode = function() {
+
+    self.updateByMode = function () {
         self.reload();
     };
-    
+
     self.root.controller.season.subscribeToSeason(self.updateBySeason);
     self.root.controller.season.subscribeToMode(self.updateByMode);
-    
+
     self.modal = new NewActivityModal(root, self, self.season);
     self.removeModal = new RemoveActivityModal(root, self);
 
@@ -44,11 +44,17 @@ function ActivityController(root, seasonController) {
             self.activities(array);
         };
 
-        root.ajax.activity.loadBySeason(self.season.yearpicker.current(), callback);
+//        root.ajax.activity.loadBySeason(self.season.yearpicker.current(), callback);
+        root.ajax.genericCrud.ajax(
+                root.ajax.static.datatype.activity.id,
+                root.ajax.static.crudOperation.loadBySeason.id,
+                { season : self.season.yearpicker.current() },
+                callback
+                );
     };
-    
+
     self.loadAll = function () {
-        
+
         var callback = function (data) {
             var array = self.activities();
             array = [];
@@ -59,11 +65,11 @@ function ActivityController(root, seasonController) {
         };
 
         root.ajax.activity.loadAll(callback);
-        
+
     };
-    
+
     self.reload = function () {
-        if (self.season.currentMode() === 1){
+        if (self.season.currentMode() === 1) {
             self.loadBySeason();
         } else {
             self.loadAll();
@@ -119,7 +125,7 @@ function ActivityController(root, seasonController) {
         self.failure = ko.observable(false);
 
         self.yearpicker = new YearPicker(self.root, self.root.controller.season, self.season.yearpicker.current());
-        
+
         self.selectedLabel = ko.observable("")
                 .extend({required: {params: true, message: "Ce champ est obligatoire"}})
                 .extend({minLength: {params: 5, message: "La description de l'activité doit faire au moins 5 caractères."}});

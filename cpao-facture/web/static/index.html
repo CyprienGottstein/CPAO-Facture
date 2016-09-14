@@ -27,7 +27,9 @@ and open the template in the editor.
         <script type="text/javascript" src="app/util/yearPicker.js"></script>
         <script type="text/javascript" src="app/controller/activityController.js"></script>
         <script type="text/javascript" src="app/controller/insuranceController.js"></script>
+        <script type="text/javascript" src="app/controller/resourceController.js"></script>
         <script type="text/javascript" src="app/controller/seasonController.js"></script>
+        <script type="text/javascript" src="app/model/genericResource.js"></script>
         <script type="text/javascript" src="app/ajax.js"></script>
         <script type="text/javascript" src="app/model.js"></script>
         <script type="text/javascript" src="app/app.js"></script>
@@ -36,7 +38,7 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
+    <body id="root">
 
         <nav class="navbar navbar-fixed-top header-cpao">
             <div class="container">
@@ -78,97 +80,55 @@ and open the template in the editor.
                         <div class="container">
                             <div class="collapse navbar-collapse collapse-buttons">
                                 <ul class="nav navbar-nav">
-                                    <li class="active"><a data-toggle="tab" href="#activitySubTab">Activités</a></li>
-                                    <li><a data-toggle="tab" href="#insuranceSubTab">Assurances</a></li>
+                                    <!-- ko foreach : controller.resource.datatypes -->
+                                    <li><a data-toggle="tab" data-bind="attr:{ href : $data.tab }, text:$data.label"></a></li>
+                                    <!-- /ko -->
+<!--                                    <li class="active"><a data-toggle="tab" href="#activitySubTab">Activités</a></li>
+                                    <li><a data-toggle="tab" href="#insuranceSubTab">Assurances</a></li>-->
                                 </ul>
                             </div>
                         </div>
                     </nav>
-                    <div id="activitySubTab" class="tab-pane fade in active">
+                    <!-- ko foreach : controller.resource.datatypes -->
+                    <div class="tab-pane fade" data-bind="attr:{ id : $data.tabId }">
                         <div class="container">
                             <div class="row">
-                                <h1>Gestion des activités</h1>
+                                <h1 data-bind="text:$data.tabLabel"></h1>
                             </div>
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Id</th>
-                                        <th>Saison</th>
-                                        <th>Description</th>
-                                        <th>Licence</th>
-                                        <th>Cotisation</th>
+                                        <!-- ko foreach : $data.fields-->
+                                        <th data-bind="text : $data.label"></th>
+                                        <!-- /ko -->
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- ko foreach : controller.activity.activities -->
+                                    <!-- ko foreach : { data : $data.resources, as :'resource' } -->
                                     <tr>
-                                        <td data-bind="text : $data.id"></td>
-                                        <td data-bind="text : $data.season"></td>
-                                        <td data-bind="text : $data.label"></td>
-                                        <td data-bind="text : $data.licenceCost"></td>
-                                        <td data-bind="text : $data.cotisationCost"></td>
+                                        <!-- ko foreach : { data : $parent.fields, as : 'fieldmd' } -->
+                                        <td data-bind="text : resource[fieldmd.id]"></td>
+                                        <!-- /ko -->
                                         <td>
-                                            <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleEditModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
-                                            <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleRemoveModal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                                            <button type="button" class="btn btn-default btn-md" data-bind="click:resource.toggleEditModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+                                            <button type="button" class="btn btn-default btn-md" data-bind="click:resource.toggleRemoveModal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                                         </td>
                                     </tr>
                                     <!-- /ko -->
                                     <tr>
+                                        <!-- ko foreach : $data.fields-->
                                         <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <!-- /ko -->
                                         <td>
-                                            <button type="button" class="btn btn-default btn-md" data-bind="click:controller.activity.toggleModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                            <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <div id="insuranceSubTab" class="tab-pane fade">
-                        <div class="container">
-                            <div class="row">
-                                <h1>Gestion des assurances</h1>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Id</th>
-                                            <th>Saison</th>
-                                            <th>Description</th>
-                                            <th>Coût</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- ko foreach : controller.insurance.insurances -->
-                                        <tr>
-                                            <td data-bind="text : $data.id"></td>
-                                            <td data-bind="text : $data.season"></td>
-                                            <td data-bind="text : $data.label"></td>
-                                            <td data-bind="text : $data.insuranceCost"></td>
-                                            <td>
-                                                <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleEditModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
-                                                <button type="button" class="btn btn-default btn-md" data-bind="click:$data.toggleRemoveModal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                                            </td>
-                                        </tr>
-                                        <!-- /ko -->
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>
-                                                <button type="button" class="btn btn-default btn-md" data-bind="click:controller.insurance.toggleModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- /ko -->
                 </div>
             </div>
             <div id="adherent" class="tab-pane fade">
@@ -198,175 +158,82 @@ and open the template in the editor.
         </div>
 
         <!-- Modal section -->
-        <!-- Activity Section -->
-        <!-- New activity modal -->
-        <div id="activityModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.activity.modal.show">
+        <!-- Resource Section -->
+        <!-- Input Resource modal -->
+        <div id="inputResourceModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.resource.modal.show">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-bind="click:controller.activity.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-bind="click:controller.resource.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">Saisie d'une activité</h4>
                     </div>
-                    <div class="modal-body">   
-                        <div class="row">
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label for="activitySeason" class="col-sm-2 control-label">Saison</label>
-                                    <span class="col-sm-4">
-                                        <span class="btn btn-default glyphicon glyphicon-chevron-left" data-bind="click:controller.activity.modal.yearpicker.decrement"></span>
-                                        <span class="btn btn-info" data-bind="text:controller.activity.modal.yearpicker.current"> 2016 </span>
-                                        <span class="btn btn-default glyphicon glyphicon-chevron-right" data-bind="click:controller.activity.modal.yearpicker.increment"></span>
-                                    </span>
-                                    <!--<div class="col-sm-4">-->
-                                    <!--                                        <div class="input-group date">-->
-                                    <!--</div>-->
-                                    <!--                                        <div class="input-group date" id="datetimepicker12">
-                                                                                <input type='text' class="form-control" />
-                                                                                <span class="input-group-addon">
-                                                                                    <span class="glyphicon glyphicon-calendar"></span>
-                                                                                </span>
-                                                                            </div>-->
-                                    <!--</div>-->
-                                </div>
-                                <div class="form-group">
-                                    <label for="activityLabel" class="col-sm-2 control-label">Description</label>
-                                    <div class="col-sm-10">
-                                        <!--<input type="text" class="form-control" id="exampleInputPassword3" placeholder="Description">-->
-                                        <textarea class="form-control" id="activityLabel" rows="3"
-                                                  placeholder="Description (200 caractères max)" data-bind="textInput:controller.activity.modal.selectedLabel">
-                                        </textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="activityLicenceCost" class="col-sm-2 control-label">Licence</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="activityLicenceCost"
-                                               placeholder="Prix de la licence" data-bind="textInput:controller.activity.modal.selectedLicenceCost">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="activityCotisationCost" class="col-sm-2 control-label">Cotisation</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="activityCotisationCost"
-                                               placeholder="Prix de la cotisation" data-bind="textInput:controller.activity.modal.selectedCotisationCost, validationOptions: {messageTemplate: 'validationTemplate'}">
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <!-- ko if : controller.activity.modal.failure() || controller.activity.modal.active -->
-                    <div class="modal-body modal-body-split">
-                        <!-- ko if : controller.activity.modal.failure -->
-                        <p class="ajax-error">La sauvegarde de l'activité a échoué.</p>
-                        <!-- /ko -->
-                        <!-- ko if : controller.activity.modal.active -->
-                        <img class="img-centered" src="img/loading.gif" alt="loading">
-                        <!-- /ko -->
-                    </div>
-                    <!-- /ko -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-bind="click:controller.activity.toggleModal">Fermer</button>
-                        <button type="button" class="btn btn-primary" data-bind="enable: controller.activity.modal.activityValidator.isValid(), click:controller.activity.modal.save">Sauvegarder</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Remove activity modal -->
-        <div id="activityRemoveModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.activity.removeModal.show">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-bind="click:controller.activity.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Suppression d'une activité</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p data-bind="html:controller.activity.removeModal.label"></p>
-                        <!-- ko if : controller.activity.removeModal.active -->
-                        <img class="img-centered" src="img/loading.gif" alt="loading">
-                        <!-- /ko -->
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-bind="click:controller.activity.removeModal.toggle">Fermer</button>
-                        <button type="button" class="btn btn-primary" data-bind="click:controller.activity.removeModal.remove">Supprimer</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Insurance Section -->
-        <!-- New insurance modal -->
-        <div id="InsuranceInputModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.insurance.modal.show">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-bind="click:controller.insurance.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Saisie d'un mode d'assurance</h4>
-                    </div>
-                    <div class="modal-body">   
+                    <div class="modal-body" id="inputResourceModalBody">   
                         <div class="row">
                             <form class="form-horizontal">
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">Saison</label>
                                     <span class="col-sm-4">
-                                        <span class="btn btn-default glyphicon glyphicon-chevron-left" data-bind="click:controller.insurance.modal.yearpicker.decrement"></span>
-                                        <span class="btn btn-info" data-bind="text:controller.insurance.modal.yearpicker.current"> 2016 </span>
-                                        <span class="btn btn-default glyphicon glyphicon-chevron-right" data-bind="click:controller.insurance.modal.yearpicker.increment"></span>
+                                        <span class="btn btn-default glyphicon glyphicon-chevron-left" data-bind="click:controller.resource.modal.yearpicker.decrement"></span>
+                                        <span class="btn btn-info" data-bind="text:controller.resource.modal.yearpicker.current"></span>
+                                        <span class="btn btn-default glyphicon glyphicon-chevron-right" data-bind="click:controller.resource.modal.yearpicker.increment"></span>
                                     </span>
                                 </div>
+                                <!-- ko foreach : controller.resource.modal.currentResourceFields -->
                                 <div class="form-group">
-                                    <label for="insuranceLabel" class="col-sm-2 control-label">Description</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" id="insuranceLabel" rows="3"
-                                                  placeholder="Description (200 caractères max)" data-bind="textInput:controller.insurance.modal.selectedLabel">
+                                    <label for="activityLabel" class="col-sm-2 control-label" data-bind="text:$data.metadata.label">  </label>
+                                    <!-- ko if : $data.metadata.type === "float" -->
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control"
+                                               placeholder="Prix de la cotisation" data-bind="textInput:$data.data">
+                                    </div>
+                                    <!-- /ko -->
+
+                                    <!-- ko if : $data.metadata.type === "string" -->
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control" rows="3" placeholder="Description (200 caractères max)" data-bind="textInput:$data.data">
                                         </textarea>
                                     </div>
+                                    <!-- /ko -->
                                 </div>
-                                <div class="form-group">
-                                    <label for="insuranceInsuranceCost" class="col-sm-2 control-label">Licence</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="insuranceInsuranceCost"
-                                               placeholder="Prix de la licence" data-bind="textInput:controller.insurance.modal.selectedInsuranceCost">
-                                    </div>
-                                </div>
+                                <!-- /ko -->
                             </form>
                         </div>
                     </div>
-                    <!-- ko if : controller.insurance.modal.failure() || controller.insurance.modal.active -->
+                    <!-- ko if : controller.resource.modal.failure() || controller.resource.modal.active -->
                     <div class="modal-body modal-body-split">
-                        <!-- ko if : controller.insurance.modal.failure -->
-                        <p class="ajax-error">La sauvegarde du mode d'assurance a échoué.</p>
+                        <!-- ko if : controller.resource.modal.failure -->
+                        <p class="ajax-error">La sauvegarde de l'activité a échoué.</p>
                         <!-- /ko -->
-                        <!-- ko if : controller.insurance.modal.active -->
+                        <!-- ko if : controller.resource.modal.active -->
                         <img class="img-centered" src="img/loading.gif" alt="loading">
                         <!-- /ko -->
                     </div>
                     <!-- /ko -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-bind="click:controller.insurance.toggleModal">Fermer</button>
-                        <button type="button" class="btn btn-primary" data-bind="enable: controller.insurance.modal.insuranceValidator.isValid(), click:controller.insurance.modal.save">Sauvegarder</button>
+                        <button type="button" class="btn btn-default" data-bind="click:controller.resource.toggleModal">Fermer</button>
+                        <button type="button" class="btn btn-primary" data-bind="enable: controller.resource.modal.resourceValidator.isValid(), click:controller.resource.modal.save">Sauvegarder</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Remove insurance modal -->
-        <div id="insuranceRemoveModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.insurance.removeModal.show">
+        <!-- Remove resource modal -->
+        <div id="removeResourceModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:controller.resource.removeModal.show">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-bind="click:controller.insurance.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Suppression d'un mode d'assurance</h4>
+                        <button type="button" class="close" data-bind="click:controller.resource.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Suppression d'une activité</h4>
                     </div>
                     <div class="modal-body">
-                        <p data-bind="html:controller.insurance.removeModal.label"></p>
-                        <!-- ko if : controller.insurance.removeModal.active -->
+                        <p data-bind="html:controller.resource.removeModal.label"></p>
+                        <!-- ko if : controller.activity.removeModal.active -->
                         <img class="img-centered" src="img/loading.gif" alt="loading">
                         <!-- /ko -->
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-bind="click:controller.insurance.removeModal.toggle">Fermer</button>
-                        <button type="button" class="btn btn-primary" data-bind="click:controller.insurance.removeModal.remove">Supprimer</button>
+                        <button type="button" class="btn btn-default" data-bind="click:controller.resource.removeModal.toggle">Fermer</button>
+                        <button type="button" class="btn btn-primary" data-bind="click:controller.resource.removeModal.remove">Supprimer</button>
                     </div>
                 </div>
             </div>

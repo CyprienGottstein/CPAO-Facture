@@ -11,11 +11,15 @@ function AppViewModel() {
 
     var self = this;
     self.model = new Model(self);
+    
+    self.model = {};
+    self.model.genericResource = new GenericResource(self);
 
     self.controller = {};
     self.controller.season = new SeasonController(self);
     self.controller.activity = new ActivityController(self, self.controller.season);
     self.controller.insurance = new InsuranceController(self, self.controller.season);
+    self.controller.resource = new ResourceController(self, self.controller.season);
     
     self.ajax = new Ajax(self);
 
@@ -37,13 +41,5 @@ $(window).on('load', function () {
     $('.navbar-lower').affix({
         offset: {top: 50}
     });
-    
-//    $(function () {
-//        $('#datetimepicker12').datetimepicker({
-//            format: "YYYY",
-//            viewMode: "years"
-//        });
-//    });
-
 
 });
