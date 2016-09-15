@@ -29,6 +29,7 @@ public class InsuranceDaoVerticle extends AbstractVerticle {
             public void handle(Message<JsonObject> message){
                 
                 final JsonObject insurance = message.body();
+                System.out.println(insurance.encodePrettily());
                 final int result = dao.save(insurance);
                 
                 message.reply(result);
@@ -36,7 +37,7 @@ public class InsuranceDaoVerticle extends AbstractVerticle {
             }
         });
         
-        bus.consumer("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-remove", new Handler<Message<Integer>>() {
+        bus.consumer("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-remove", new Handler<Message<Integer>>() {
             @Override
             public void handle(Message<Integer> message){
                 
@@ -49,7 +50,7 @@ public class InsuranceDaoVerticle extends AbstractVerticle {
             }
         });
         
-        bus.consumer("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-update", new Handler<Message<JsonObject>>() {
+        bus.consumer("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-update", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
                 
@@ -63,7 +64,7 @@ public class InsuranceDaoVerticle extends AbstractVerticle {
             }
         });
         
-        bus.consumer("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-load-bySeason", new Handler<Message<JsonObject>>() {
+        bus.consumer("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-load-bySeason", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
                 
@@ -76,7 +77,7 @@ public class InsuranceDaoVerticle extends AbstractVerticle {
             }
         });
         
-        bus.consumer("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-load-all", new Handler<Message<JsonObject>>() {
+        bus.consumer("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-load-all", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
                 

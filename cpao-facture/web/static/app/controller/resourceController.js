@@ -63,6 +63,7 @@ function ResourceController(root, seasonController) {
         };
 
         datatype.reload = function () {
+            console.log("Triggered");
             if (self.season.currentMode() === 1) {
                 datatype.loadBySeason();
             } else {
@@ -116,6 +117,7 @@ function ResourceController(root, seasonController) {
 
         self.toggle = function (datatypeId) {
             self.show(!self.show());
+            console.log(datatypeId);
             if (typeof datatypeId !== "undefined"){
                 self.currentDatatype(datatypeId);
             }

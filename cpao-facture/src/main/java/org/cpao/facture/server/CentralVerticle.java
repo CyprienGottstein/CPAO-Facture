@@ -115,19 +115,19 @@ public class CentralVerticle extends AbstractVerticle {
         });
         
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-save", (Message<JsonObject> message) -> {
-            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-save", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+            bus.send("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-save", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
                 message.reply(result.result().body());
             });
         });
         
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-remove", (Message<Integer> message) -> {
-            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-remove", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+            bus.send("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-remove", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
                 message.reply(result.result().body());
             });
         });
         
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-update", (Message<Integer> message) -> {
-            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-update", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+            bus.send("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-update", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
                 message.reply(result.result().body());
             });
         });

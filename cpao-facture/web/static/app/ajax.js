@@ -13,8 +13,8 @@ function Ajax(root) {
 
     self.static = {};
     self.static.defaultHeader = {};
-//    self.static.defaultHeader.url = "http://localhost:10000";
-    self.static.defaultHeader.url = "http://109.8.187.63:10000";
+    self.static.defaultHeader.url = "http://localhost:10000";
+//    self.static.defaultHeader.url = "http://109.8.187.63:10000";
     
     self.static.defaultHeader.method = "POST";
     self.static.defaultHeader.contentType = 'text/plain';
