@@ -103,13 +103,13 @@ public class CentralVerticle extends AbstractVerticle {
          * Insurance Redirection
          */
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-load-bySeason", (Message<JsonObject> message) -> {
-            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-load-bySeason", message.body(), (AsyncResult<Message<JsonArray>> result) -> {
+            bus.send("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-load-bySeason", message.body(), (AsyncResult<Message<JsonArray>> result) -> {
                 message.reply(result.result().body());
             });
         });
         
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-load-all", (Message<JsonObject> message) -> {
-            bus.send("org.cpao.facture.server.dao.activity.InsuranceDaoVerticle-load-all", null, (AsyncResult<Message<JsonArray>> result) -> {
+            bus.send("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-load-all", null, (AsyncResult<Message<JsonArray>> result) -> {
                 message.reply(result.result().body());
             });
         });

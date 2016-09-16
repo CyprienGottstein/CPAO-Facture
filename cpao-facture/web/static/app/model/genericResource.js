@@ -173,6 +173,7 @@ function GenericResource(root) {
         self.datatypeId = datatypeId;
 
         self.toggleRemoveModal = function () {
+            console.log(self.datatypeId);
             $parent.removeModal.focus(self, self.datatypeId);
             $parent.removeModal.toggle(self.datatypeId);
         };

@@ -21,10 +21,10 @@ public class App {
         VerticleDeployer deployer = new VerticleDeployer(vertx);
         deployer.deploy();
         
-//        DatabaseScript dbscript = new DatabaseScript(vertx);
-//        dbscript.generateDatabase();
-//        dbscript.retrieveActivity();
-//        dbscript.retrieveInsurance();
+        DatabaseScript dbscript = new DatabaseScript(vertx);
+        dbscript.generateDatabase();
+        dbscript.retrieveActivity();
+        dbscript.retrieveInsurance();
         
 
     }
