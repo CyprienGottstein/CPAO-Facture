@@ -39,6 +39,8 @@ function SeasonController(root) {
                 return 'Saison <span class="caret"></span>';
         }
     });
+    
+    self.show = ko.observable(false);
 
     self.yearpicker = new YearPicker(self.root, self, 2015);
     
@@ -52,7 +54,7 @@ function SeasonController(root) {
     
     self.setSeason = function(season) {
         self.yearpicker.current(season);
-    }
+    };
 
     function SeasonModeModel($root, $parent, data) {
 

@@ -5,6 +5,7 @@
  */
 package org.cpao.facture.server;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -13,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Instant;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -90,6 +93,75 @@ public class JsonUtil {
         }
 
 //        System.out.println(o.encodePrettily());
+        return o;
+    }
+
+    public JsonArray parsePeopleToJson(String filename) {
+
+        final JsonArray array = new JsonArray();
+
+        try (Stream<String> stream = Files.lines(Paths.get(filename), Charset.forName("UTF-8"))) {
+
+            stream.forEach(new Consumer<String>() {
+
+                boolean nameFlag = false;
+                String lastname = "NOM";
+
+                @Override
+                public void accept(String line) {
+                    final String[] data = line.replace(":", "").split("\t");
+
+                    if (nameFlag) {
+                        if (data.length == 1) {
+                            nameFlag = false;
+                        } else {
+                            if (data.length == 2) {
+                                final JsonObject o = new JsonObject();
+                                o.put("lastname", lastname);
+                                o.put("firstname", data[1]);
+                                o.put("birthday", Instant.now().toEpochMilli());
+                                array.add(o);
+                            }
+                        }
+
+                    } else {
+                        System.out.println(data[0]);
+                        if (data[0].equals("Nom")) {
+                            System.out.println("PROC : " + data[1]);
+                            lastname = data[1];
+                        }
+                        if (data[0].equals("Adherent")) {
+                            nameFlag = true;
+                        }
+                    }
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return array;
+    }
+
+    public JsonObject parseHomeToJson(String filename) {
+
+        final JsonObject o = new JsonObject();
+
+        try (Stream<String> stream = Files.lines(Paths.get(filename), Charset.forName("UTF-8"))) {
+
+            stream.forEach(line -> {
+                final String[] data = line.replace(":", "").split("\t");
+
+                if (data[0].equals("Nom")) {
+                    o.put("name", data[1]);
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return o;
     }
 

@@ -14,7 +14,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cpao.facture.server.dao.activity.ActivityDaoVerticle;
+import org.cpao.facture.server.dao.home.HomeDaoVerticle;
 import org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle;
+import org.cpao.facture.server.dao.people.PeopleDaoVerticle;
 import org.cpao.facture.server.rest.RestVerticle;
 
 /**
@@ -34,10 +36,12 @@ public class VerticleDeployer {
         List<String> verticlesToDeploy = new ArrayList<>();
         verticlesToDeploy.add(ActivityDaoVerticle.class.getCanonicalName());
         verticlesToDeploy.add(InsuranceDaoVerticle.class.getCanonicalName());
+        verticlesToDeploy.add(PeopleDaoVerticle.class.getCanonicalName());
+        verticlesToDeploy.add(HomeDaoVerticle.class.getCanonicalName());
         verticlesToDeploy.add(CentralVerticle.class.getName());
         verticlesToDeploy.add(RestVerticle.class.getName());
 
-        final CountDownLatch latch = new CountDownLatch(4);
+        final CountDownLatch latch = new CountDownLatch(6);
         
         verticlesToDeploy.forEach(verticle -> {
             vertx.deployVerticle(verticle, new Handler<AsyncResult<String>>() {

@@ -132,6 +132,60 @@ public class CentralVerticle extends AbstractVerticle {
             });
         });
         
+        /**
+         * People Redirection
+         */
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-people-load-all", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.people.PeopleDaoVerticle-load-all", null, (AsyncResult<Message<JsonArray>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-people-save", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.people.PeopleDaoVerticle-save", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-people-remove", (Message<Integer> message) -> {
+            bus.send("org.cpao.facture.server.dao.people.PeopleDaoVerticle-remove", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-people-update", (Message<Integer> message) -> {
+            bus.send("org.cpao.facture.server.dao.people.PeopleDaoVerticle-update", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        /**
+         * Home Redirection
+         */
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-home-load-all", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-all", null, (AsyncResult<Message<JsonArray>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-home-save", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-save", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-home-remove", (Message<Integer> message) -> {
+            bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-remove", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-home-update", (Message<Integer> message) -> {
+            bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-update", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
     }
     
 }

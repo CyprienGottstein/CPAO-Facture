@@ -12,13 +12,15 @@ function YearPicker($root, $parent, year) {
     self.parent = $parent;
 
     self.show = ko.computed(function () {
-        switch (self.parent.currentMode()) {
-            case 0:
-                return false;
-            case 1:
-                return true;
-            default:
-                return false;
+        if (self.parent.show()) {
+            switch (self.parent.currentMode()) {
+                case 0:
+                    return false;
+                case 1:
+                    return true;
+                default:
+                    return false;
+            }
         }
     });
 

@@ -55,15 +55,11 @@ function Ajax(root) {
 
     self.genericCrud = {};
 
-    self.genericCrud.ajax = function (datatype, operation, params, callback) {
+    self.genericCrud.ajax = function (rest, operation, params, callback) {
 
         var header = _.cloneDeep(self.static.defaultHeader);
         
-        self.static.datatypes.forEach(function(staticDatatype){
-            if (staticDatatype.id === datatype) {
-                header.url += "/" + staticDatatype.rest;
-            }
-        });
+        header.url += "/" + _.clone(rest);
         
         self.static.operations.forEach(function(staticOperation){
             if (staticOperation.id === operation) {

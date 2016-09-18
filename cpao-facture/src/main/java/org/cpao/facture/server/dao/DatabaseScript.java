@@ -5,8 +5,11 @@
  */
 package org.cpao.facture.server.dao;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -76,22 +79,24 @@ public class DatabaseScript {
 
             final int i = s.executeUpdate("CREATE SCHEMA CPAO AUTHORIZATION \"root\"\n"
                     + "        CREATE TABLE ACTIVITY(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), LICENCE_COST DOUBLE, COTISATION_COST DOUBLE, SEASON INTEGER)\n"
-                    + "        CREATE TABLE ADHERENT(ID INTEGER PRIMARY KEY, HOME INTEGER, FIRSTNAME VARCHAR(100), LASTNAME VARCHAR(100))\n"
-                    + "        CREATE TABLE HOME(ID INTEGER PRIMARY KEY, LABEL VARCHAR(100))\n"
-                    + "        CREATE TABLE HOME_ADHERENT(ID_HOME INTEGER, ID_ADHERENT INTEGER)\n"
+                    + "        CREATE TABLE PERSON(ID INTEGER IDENTITY PRIMARY KEY, FIRSTNAME VARCHAR(100), LASTNAME VARCHAR(100), BIRTHDAY BIGINT)\n"
+                    + "        CREATE TABLE HOME(ID INTEGER IDENTITY PRIMARY KEY, NAME VARCHAR(100))\n"
+                    + "        CREATE TABLE HOME_PERSON(ID_HOME INTEGER, ID_PERSON INTEGER)\n"
                     + "        CREATE TABLE INSURANCE(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), INSURANCE_COST DOUBLE, SEASON INTEGER)\n"
                     + "        CREATE TABLE MAGAZINE(SEASON INTEGER PRIMARY KEY, MAGAZINE_COST DOUBLE)\n"
-                    + "        CREATE TABLE ACTIVITY_ADHERENT(ID_ACTIVITY INTEGER, ID_ADHERENT INTEGER, ID_INSURANCE INTEGER, MAGAZINE BOOLEAN, TEACHER BOOLEAN, OBSERVATOR BOOLEAN, FAMILY BOOLEAN)\n"
+                    + "        CREATE TABLE ACTIVITY_PERSON(ID_ACTIVITY INTEGER, ID_PERSON INTEGER, ID_INSURANCE INTEGER, MAGAZINE BOOLEAN, TEACHER BOOLEAN, OBSERVATOR BOOLEAN, FAMILY BOOLEAN)\n"
                     + "        CREATE SEQUENCE SEQ_ACTIVITY AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        CREATE SEQUENCE SEQ_INSURANCE AS INTEGER START WITH 0 INCREMENT BY 1\n"
+                    + "        CREATE SEQUENCE SEQ_PERSON AS INTEGER START WITH 0 INCREMENT BY 1\n"
+                    + "        CREATE SEQUENCE SEQ_HOME AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        GRANT ALL ON ACTIVITY TO \"root\"\n"
-                    + "        GRANT ALL ON ADHERENT TO \"root\"\n"
+                    + "        GRANT ALL ON PERSON TO \"root\"\n"
                     + "        GRANT ALL ON HOME TO \"root\"\n"
                     + "        GRANT ALL ON INSURANCE TO \"root\"\n"
                     + "        GRANT ALL ON MAGAZINE TO \"root\"\n"
-                    + "        GRANT ALL ON HOME_ADHERENT TO \"root\"\n"
-                    + "        GRANT ALL ON ACTIVITY_ADHERENT TO \"root\"\n");
-            
+                    + "        GRANT ALL ON HOME_PERSON TO \"root\"\n"
+                    + "        GRANT ALL ON ACTIVITY_PERSON TO \"root\"\n");
+
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -140,7 +145,7 @@ public class DatabaseScript {
                             final JsonObject insurance = util.parseInsuranceToJson(p.toString());
                             final String label = insurance.getString("label").split(" - ")[0];
                             insurance.put("label", label);
-                            
+
                             System.out.println("insurance : " + insurance.encodePrettily());
                             bus.send("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-save", insurance);
                         }
@@ -149,6 +154,121 @@ public class DatabaseScript {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void retrieveHomeBatch() {
+        final EventBus bus = vertx.eventBus();
+        final JsonArray homes = new JsonArray();
+
+        JsonUtil util = new JsonUtil();
+
+        Path path = Paths.get("C:\\Users\\Cyprien\\Desktop\\Facture 2015-16 - VERSION CYPRIEN\\familleMySave");
+        try {
+            DirectoryStream<Path> stream;
+            stream = Files.newDirectoryStream(path);
+            stream
+                    .forEach(p -> {
+                        if (!p.toString().contains("DS_Store")) {
+                            final JsonObject home = util.parseHomeToJson(p.toString());
+                            homes.add(home);
+                        }
+                    });
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("homes : " + homes.encodePrettily());
+
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+
+            final StringBuilder query = new StringBuilder();
+
+            for (int i = 0; i < homes.size(); i++) {
+                final JsonObject home = homes.getJsonObject(i);
+                query
+                        .append("INSERT INTO CPAO.HOME (ID, NAME) VALUES (")
+                        .append("NEXT VALUE FOR CPAO.SEQ_HOME, ")
+                        .append("'")
+                        .append(home.getString("name"))
+                        .append("' );");
+            }
+
+            final int result = s.executeUpdate(query.toString());
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void retrieveHome() {
+        final EventBus bus = vertx.eventBus();
+
+        JsonUtil util = new JsonUtil();
+
+        Path path = Paths.get("C:\\Users\\Cyprien\\Desktop\\Facture 2015-16 - VERSION CYPRIEN\\familleMySave");
+        try {
+            DirectoryStream<Path> stream;
+            stream = Files.newDirectoryStream(path);
+            stream
+                    .forEach(p -> {
+                        if (!p.toString().contains("DS_Store")) {
+                            final JsonObject home = util.parseHomeToJson(p.toString());
+                            bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-save", home);
+                        }
+                    });
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void retrievePeople() {
+        final EventBus bus = vertx.eventBus();
+
+        JsonUtil util = new JsonUtil();
+
+        bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-all", null, (AsyncResult<Message<JsonArray>> result) -> {
+            final JsonArray array = result.result().body();
+            System.out.println("homes : " + array.encodePrettily());
+            Path path = Paths.get("C:\\Users\\Cyprien\\Desktop\\Facture 2015-16 - VERSION CYPRIEN\\familleMySave");
+            try {
+                DirectoryStream<Path> stream;
+                stream = Files.newDirectoryStream(path);
+                stream
+                        .forEach(p -> {
+                            if (!p.toString().contains("DS_Store")) {
+                                System.out.println("path : " + p.toString());
+                                final JsonArray peoples = util.parsePeopleToJson(p.toString());
+                                for (int i = 0; i < peoples.size(); i++) {
+                                    final JsonObject people = peoples.getJsonObject(i);
+
+                                    int n = 0;
+                                    boolean flag = true;
+                                    while (n < array.size() && flag) {
+                                        final JsonObject home = array.getJsonObject(n);
+                                        if (home.getString("name").equals(people.getString("lastname"))) {
+                                            people.put("home", home.getInteger("id"));
+                                            flag = true;
+                                        }
+                                        n++;
+                                    }
+
+                                    System.out.println("people : " + people.encodePrettily());
+                                    bus.send("org.cpao.facture.server.dao.people.PeopleDaoVerticle-save", people);
+
+                                }
+                            }
+                        });
+
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 }

@@ -25,6 +25,10 @@ public class App {
         dbscript.generateDatabase();
         dbscript.retrieveActivity();
         dbscript.retrieveInsurance();
+        dbscript.retrieveHomeBatch();
+//        dbscript.retrieveHome();        
+        dbscript.retrievePeople();
+
         
 
     }
