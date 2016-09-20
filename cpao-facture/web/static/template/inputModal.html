@@ -1,0 +1,34 @@
+<!-- Input Resource modal -->
+<script type="text/html" id="inputModalTemplate">
+    <div class="modal fade" tabindex="-1" role="dialog" data-bind="attr: { id : idModal }, showModal:show">
+        <div class="modal-dialog" style="width:1400px" role="document" data-bind="style : { width : large ? '1400px' : '' }">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-bind="click:close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" data-bind="text: inputResourceController.title"></h4>
+                </div>
+                <div class="modal-body" id="inputResourceModalBody">   
+                    <div class="row">
+                        <form class="form-horizontal">
+                            <div data-bind="template: { name: 'inputTemplate', data: inputResourceController }"></div>
+                        </form>
+                    </div>
+                </div>
+                <!-- ko if : failure() || active -->
+                <div class="modal-body modal-body-split">
+                    <!-- ko if : failure -->
+                    <p class="ajax-error">La sauvegarde de l'activité a échoué.</p>
+                    <!-- /ko -->
+                    <!-- ko if : active -->
+                    <img class="img-centered" src="img/loading.gif" alt="loading">
+                    <!-- /ko -->
+                </div>
+                <!-- /ko -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click:close">Fermer</button>
+                    <button type="button" class="btn btn-primary" data-bind="enable: isValid(), click:save">Sauvegarder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

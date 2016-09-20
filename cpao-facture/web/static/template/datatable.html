@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<script type="text/html" id="datatableTemplate">
+    <table class="table">
+        <thead>
+            <tr>
+                <!-- ko foreach : fields -->
+                <th data-bind="text : $data.label"></th>
+                <!-- /ko -->
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ko foreach : { data : resources, as :'resource' } -->
+            <tr>
+                <!-- ko foreach : { data : $parent.fields, as : 'fieldmd' } -->
+
+                <!-- ko if : $data.type === 'select' -->
+                <td data-bind="text : resource[fieldmd.id]().label"></td>
+                <!-- /ko -->
+                <!-- ko if : $data.type === 'boolean' -->
+                    <!-- ko if : resource[fieldmd.id] -->
+                        <td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
+                    <!-- /ko -->
+                    <!-- ko ifnot : resource[fieldmd.id] -->
+                        <td><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+                    <!-- /ko -->
+                <!-- /ko -->
+                <!-- ko if : $data.type !== 'select' && $data.type !== 'boolean' -->
+                <td data-bind="text : resource[fieldmd.id]"></td>
+                <!-- /ko -->
+
+                <!-- /ko -->
+                <td>
+                    <button type="button" class="btn btn-default btn-md" data-bind="click:resource.toggleEditModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-default btn-md" data-bind="click:resource.toggleRemoveModal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                </td>
+            </tr>
+            <!-- /ko -->
+            <tr>
+                <!-- ko foreach : fields-->
+                <td></td>
+                <!-- /ko -->
+                <td>
+                    <button type="button" class="btn btn-default btn-md" data-bind="click:toggleModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</script>

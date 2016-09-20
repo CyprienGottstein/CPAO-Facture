@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<script type="text/html" id="resourceTemplate">
+    <div class="tab-content">
+        <nav class="navbar navbar-default navbar-lower" role="navigation">
+            <div class="container">
+                <div class="collapse navbar-collapse collapse-buttons">
+                    <ul class="nav navbar-nav">
+                        <!-- ko foreach : controller.resource.datatypes -->
+                            <!-- ko if : $data.primary -->
+                                <li><a data-toggle="tab" data-bind="attr:{ href : $data.tab }, text:$data.label, click:$data.toggle"></a></li>
+                            <!-- /ko -->
+                        <!-- /ko -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- ko foreach : controller.resource.datatypes -->
+        <div class="tab-pane fade" data-bind="attr:{ id : $data.tabId }">
+            <div class="container">
+                <div class="row">
+                    <h1 data-bind="text:$data.tabLabel"></h1>
+                </div>
+                <div data-bind="template: { name: 'datatableTemplate', data: $data }"></div>
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
+</script>

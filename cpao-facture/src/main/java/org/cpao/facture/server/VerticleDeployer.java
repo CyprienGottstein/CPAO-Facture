@@ -17,6 +17,7 @@ import org.cpao.facture.server.dao.activity.ActivityDaoVerticle;
 import org.cpao.facture.server.dao.home.HomeDaoVerticle;
 import org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle;
 import org.cpao.facture.server.dao.people.PeopleDaoVerticle;
+import org.cpao.facture.server.dao.peopleactivity.PeopleActivityDaoVerticle;
 import org.cpao.facture.server.rest.RestVerticle;
 
 /**
@@ -38,10 +39,11 @@ public class VerticleDeployer {
         verticlesToDeploy.add(InsuranceDaoVerticle.class.getCanonicalName());
         verticlesToDeploy.add(PeopleDaoVerticle.class.getCanonicalName());
         verticlesToDeploy.add(HomeDaoVerticle.class.getCanonicalName());
+        verticlesToDeploy.add(PeopleActivityDaoVerticle.class.getCanonicalName());
         verticlesToDeploy.add(CentralVerticle.class.getName());
         verticlesToDeploy.add(RestVerticle.class.getName());
 
-        final CountDownLatch latch = new CountDownLatch(6);
+        final CountDownLatch latch = new CountDownLatch(7);
         
         verticlesToDeploy.forEach(verticle -> {
             vertx.deployVerticle(verticle, new Handler<AsyncResult<String>>() {

@@ -186,6 +186,33 @@ public class CentralVerticle extends AbstractVerticle {
             });
         });
         
+        /**
+         * People Activity Redirection
+         */
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-load-people", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.peopleactivity.PeopleActivityDaoVerticle-load-people", message.body(), (AsyncResult<Message<JsonArray>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-save", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.peopleactivity.PeopleActivityDaoVerticle-save", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-remove", (Message<Integer> message) -> {
+            bus.send("org.cpao.facture.server.dao.peopleactivity.PeopleActivityDaoVerticle-remove", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-update", (Message<Integer> message) -> {
+            bus.send("org.cpao.facture.server.dao.peopleactivity.PeopleActivityDaoVerticle-update", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
     }
     
 }

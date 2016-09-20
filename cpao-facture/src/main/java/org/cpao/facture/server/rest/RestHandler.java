@@ -444,5 +444,96 @@ public class RestHandler {
         });
 
     }
+    
+    public void peopleActivityLoadByPeople(RoutingContext routingContext) {
+        
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int people = body.getInteger("people");
+
+        System.out.println("Loading all activities for people with id : " + people);
+        System.out.println("body : " + body.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-load-people", body, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+
+    public void peopleActivitySave(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final JsonObject peopleActivity = body.getJsonObject("peopleActivity");
+
+        System.out.println("Saving people activity : " + peopleActivity.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-save", peopleActivity, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+
+    public void peopleActivityRemove(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Removing peopleActivity with id : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-remove", id, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+
+    public void peopleActivityUpdate(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+        final JsonObject data = body.getJsonObject("peopleActivity");
+
+        System.out.println("Updating peopleActivity with id : " + id + " with following data : " + data.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-update", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
 
 }

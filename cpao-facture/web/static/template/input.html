@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<script type="text/html" id="inputTemplate">
+    <!-- ko foreach : resourceFields -->
+        <!-- ko if : $data.metadata.input -->
+            <!-- ko if : $data.metadata.type === "datatype" -->
+                <div class="modal-body-split">
+                    <!-- ko if : $data.metadata.list -->
+                        <div style="margin-left: 50px; margin-right: 50px" data-bind="template: { name: 'datatableTemplate', data: $data.metadata.pointerToDatatype }"></div>
+                    <!-- /ko -->
+                    
+                    <!-- ko if : $data.metadata.pointerToDatatype.showInput -->
+                    <div class="modal-header modal-body-split">
+                        <button type="button" class="close" data-bind="click:$data.metadata.pointerToDatatype.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" data-bind="text: $data.data.title"></h4>
+                    </div>
+                    
+                    <div class="modal-body" data-bind="template: { name: 'inputTemplate', data: $data.data }"></div>
+                    <!-- /ko -->
+                </div>
+            <!-- /ko -->
+            <!-- ko ifnot : $data.metadata.type === "datatype" -->
+                <div class="form-group">
+                <label for="activityLabel" class="col-sm-2 control-label" data-bind="text:$data.metadata.label">  </label>
+
+                <!-- ko if : $data.metadata.type === "season" -->
+                <span class="col-sm-4">
+                    <span class="btn btn-default glyphicon glyphicon-chevron-left" data-bind="click:$data.data.decrement"></span>
+                    <span class="btn btn-info" data-bind="text:$data.data.current"></span>
+                    <span class="btn btn-default glyphicon glyphicon-chevron-right" data-bind="click:$data.data.increment"></span>
+                </span>
+                <!-- /ko -->
+
+                <!-- ko if : $data.metadata.type === "boolean" -->
+                <div class="col-sm-4">
+                    <input type="checkbox" class="form-control" data-bind="checked:$data.data">
+                </div>
+                <!-- /ko -->
+
+                <!-- ko if : $data.metadata.type === "float" -->
+                <div class="col-sm-4">
+                    <input type="text" class="form-control"
+                           placeholder="Prix de la cotisation" data-bind="textInput:$data.data">
+                </div>
+                <!-- /ko -->
+
+                <!-- ko if : $data.metadata.type === "long-string" -->
+                <div class="col-sm-8">
+                    <textarea class="form-control" rows="3" placeholder="Description (200 caractères max)" data-bind="textInput:$data.data">
+                    </textarea>
+                </div>
+                <!-- /ko -->
+
+                <!-- ko if : $data.metadata.type === "short-string" -->
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" data-bind="textInput:$data.data">
+                </div>
+                <!-- /ko -->
+
+                <!-- ko if : $data.metadata.type === "date" -->
+                <div class="col-sm-4">
+                    <input class="form-control" data-bind="datepicker:$data.data, datepickerOptions: { format : 'dd/mm/yyyy'}" />
+                </div>
+                <!-- /ko -->
+
+                <!-- ko if : $data.metadata.type === "select" -->
+                <div class="col-sm-4">
+                    <select class="form-control" data-bind="options: $data.options, optionsText: $data.metadata.subtype.field, selectedOptions:$data.data"></select>
+                </div>
+                <!-- /ko -->
+                </div>
+            <!-- /ko -->
+        <!-- /ko -->
+    <!-- /ko -->
+</script>

@@ -1,25 +1,18 @@
-function RemoveResourceModal($root, datatypes) {
+function RemoveResourceModal($root, datatypes, idModal) {
 
     // Safe pointer on self for model
     var self = this;
     // Safe pointer on the root of the application to access other controlers
     self.root = $root;
     
+    self.idModal = idModal;
+    
     self.datatypes = datatypes;
-
-    self.static = {};
-    self.static.msg = {};
-    self.static.msg.announce = {};
-    self.static.msg.announce.begin = "Vous êtes sur le point de supprimer l'activité : <label>";
-    self.static.msg.announce.end = "</label>";
-    self.static.msg.failure = {};
-    self.static.msg.failure.begin = "La suppression de l'activité : <label>";
-    self.static.msg.failure.end = "</label> a echoué.";
-
+    
     self.resource = {};
     self.label = ko.observable("");
 
-    self.currentDatatype = ko.observable();
+    self.datatype = ko.observable();
 
     self.show = ko.observable(false);
     self.active = ko.observable(false);
@@ -28,28 +21,22 @@ function RemoveResourceModal($root, datatypes) {
         self.show(!self.show());
     };
 
-    $('#removeResourceModal').on('hidden.bs.modal', function () {
-        self.show(false);
-    });
+    self.triggerCloseListener = function () {
+        $('#' + self.idModal).on('hidden.bs.modal', function () {
+            self.show(false);
+        });
+    };
 
-
-
-    self.focus = function (resource, datatypeId) {
-        self.currentDatatype(datatypeId);
+    self.focus = function (resource, datatype) {
+        self.datatype(datatype);
         self.resource = resource;
         self.label(self.resource.getLabel());
     };
 
     self.remove = function () {
-
-        var datatypeId = self.currentDatatype();
-        var datatype = null;
-        self.datatypes().forEach(function (dt) {
-            if (dt.id === datatypeId) {
-                datatype = dt;
-            }
-        });
-
+        
+        var datatype = self.datatype();
+        
         var callback = function (data) {
 
             if (typeof data !== "undefined") {
@@ -64,10 +51,10 @@ function RemoveResourceModal($root, datatypes) {
                     datatype.resources(array);
                     self.toggle();
                 } else {
-                    self.label(self.static.msg.failure.begin + self.resource.label() + self.static.msg.failure.end);
+                    self.label(self.resource.getLabel());
                 }
             } else {
-                self.label(self.static.msg.failure.begin + self.resource.label() + self.static.msg.failure.end);
+//                self.label(self.static.msg.failure.begin + self.resource.label() + self.static.msg.failure.end);
             }
 
 

@@ -27,9 +27,12 @@ and open the template in the editor.
         <script type="text/javascript" src="app/util/yearPicker.js"></script>
         <script type="text/javascript" src="app/modal/inputResourceModal.js"></script>
         <script type="text/javascript" src="app/modal/removeResourceModal.js"></script>
+        <script type="text/javascript" src="app/controller/multiSelectController.js"></script>
         <script type="text/javascript" src="app/controller/resourceController.js"></script>
         <script type="text/javascript" src="app/controller/seasonController.js"></script>
+        <script type="text/javascript" src="app/controller/inputResourceController.js"></script>
         <script type="text/javascript" src="app/model/genericResource.js"></script>
+        <script type="text/javascript" src="app/model/resourceBinder.js"></script>
         <script type="text/javascript" src="app/ajax.js"></script>
         <script type="text/javascript" src="app/model.js"></script>
         <script type="text/javascript" src="app/app.js"></script>
@@ -47,9 +50,6 @@ and open the template in the editor.
                 </div>
                 <ul class="nav navbar-nav">
                     <li class="active"><a data-toggle="tab" href="#resourceTab">Ressources</a></li>
-<!--                    <li><a data-toggle="tab" href="#activityTab">Activités</a></li>
-                    <li class="active"><a data-toggle="tab" href="#adherentTab">Adhérents</a></li>
-                    <li><a data-toggle="tab" href="#paiement">Paiements</a></li>-->
                     <li><a data-toggle="tab" href="#recap">Récapitulatif</a></li>
                 </ul>
                 <!-- ko if : controller.season.show -->
@@ -78,20 +78,7 @@ and open the template in the editor.
 
         <div class="tab-content">
             <div id="resourceTab" class="tab-pane fade in active">
-                <div data-bind="template: { name: 'activityTemplate' }"></div>
-            </div>
-<!--            <div id="activityTab" class="tab-pane fade">
-                <div data-bind="template: { name: 'activityTemplate' }"></div>
-            </div>
-            <div id="adherentTab" class="tab-pane fade in active">
-                <div data-bind="template: { name: 'adherentTemplate' }"></div>
-            </div>-->
-            <div id="paiement" class="tab-pane fade">
-                <div class="container">
-                    <div class="row">
-                        <h1>Gestion des Paiements</h1>
-                    </div>
-                </div>
+                <div data-bind="template: { name: 'resourceTemplate' }"></div>
             </div>
             <div id="recap" class="tab-pane fade">
                 <div class="container">
@@ -105,103 +92,10 @@ and open the template in the editor.
         <!-- Modal section -->
         <!-- Resource Section -->
         <!-- Input Resource modal -->
-        <div id="inputResourceModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:modal.inputResource.show">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-bind="click:modal.inputResource.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" data-bind="text: modal.inputResource.title"></h4>
-                    </div>
-                    <div class="modal-body" id="inputResourceModalBody">   
-                        <div class="row">
-                            <form class="form-horizontal">
-                                <!-- ko foreach : modal.inputResource.currentResourceFields -->
-                                <div class="form-group">
-                                    <label for="activityLabel" class="col-sm-2 control-label" data-bind="text:$data.metadata.label">  </label>
-
-                                    <!-- ko if : $data.metadata.type === "season" -->
-                                    <span class="col-sm-4">
-                                        <span class="btn btn-default glyphicon glyphicon-chevron-left" data-bind="click:$data.data.decrement"></span>
-                                        <span class="btn btn-info" data-bind="text:$data.data.current"></span>
-                                        <span class="btn btn-default glyphicon glyphicon-chevron-right" data-bind="click:$data.data.increment"></span>
-                                    </span>
-                                    <!-- /ko -->
-
-                                    <!-- ko if : $data.metadata.type === "float" -->
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control"
-                                               placeholder="Prix de la cotisation" data-bind="textInput:$data.data">
-                                    </div>
-                                    <!-- /ko -->
-
-                                    <!-- ko if : $data.metadata.type === "long-string" -->
-                                    <div class="col-sm-8">
-                                        <textarea class="form-control" rows="3" placeholder="Description (200 caractères max)" data-bind="textInput:$data.data">
-                                        </textarea>
-                                    </div>
-                                    <!-- /ko -->
-
-                                    <!-- ko if : $data.metadata.type === "short-string" -->
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" data-bind="textInput:$data.data">
-                                    </div>
-                                    <!-- /ko -->
-
-                                    <!-- ko if : $data.metadata.type === "date" -->
-                                    <div class="col-sm-4">
-                                        <input class="form-control" data-bind="datepicker:$data.data, datepickerOptions: { format : 'dd/mm/yyyy'}" />
-                                    </div>
-                                    <!-- /ko -->
-                                    
-                                    <!-- ko if : $data.metadata.type === "select" -->
-                                    <div class="col-sm-4">
-                                        <select class="form-control" data-bind="options: $data.options, optionsText: $data.metadata.subfield, selectedOptions:$data.data"></select>
-                                    </div>
-                                    <!-- /ko -->
-                                </div>
-                                <!-- /ko -->
-                            </form>
-                        </div>
-                    </div>
-                    <!-- ko if : modal.inputResource.failure() || modal.inputResource.active -->
-                    <div class="modal-body modal-body-split">
-                        <!-- ko if : modal.inputResource.failure -->
-                        <p class="ajax-error">La sauvegarde de l'activité a échoué.</p>
-                        <!-- /ko -->
-                        <!-- ko if : modal.inputResource.active -->
-                        <img class="img-centered" src="img/loading.gif" alt="loading">
-                        <!-- /ko -->
-                    </div>
-                    <!-- /ko -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-bind="click:modal.inputResource.close">Fermer</button>
-                        <button type="button" class="btn btn-primary" data-bind="enable: modal.inputResource.resourceValidator.isValid(), click:modal.inputResource.save">Sauvegarder</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Remove resource modal -->
-        <div id="removeResourceModal"  class="modal fade" tabindex="-1" role="dialog" data-bind="showModal:modal.removeResource.show">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-bind="click:modal.removeResource.toggleModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Suppression d'une activité</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p data-bind="html:modal.removeResource.label"></p>
-                        <!-- ko if : modal.removeResource.active -->
-                        <img class="img-centered" src="img/loading.gif" alt="loading">
-                        <!-- /ko -->
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-bind="click:modal.removeResource.toggle">Fermer</button>
-                        <button type="button" class="btn btn-primary" data-bind="click:modal.removeResource.remove">Supprimer</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- ko foreach : modals -->
+            <div data-bind="template: { name: 'inputModalTemplate', data: $data.inputModal }"></div>
+            <div data-bind="template: { name: 'removeModalTemplate', data: $data.removeModal }"></div>
+        <!-- /ko -->
 
         <!-- Template section -->
         <script type="text/html" id="template_holder"></script>

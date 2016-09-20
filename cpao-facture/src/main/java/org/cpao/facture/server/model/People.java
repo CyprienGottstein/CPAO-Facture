@@ -5,6 +5,7 @@
  */
 package org.cpao.facture.server.model;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -42,6 +43,15 @@ public class People extends JsonObject {
     }
     public int getHome(){
         return getInteger("home", Integer.MIN_VALUE);
+    }
+    public void addActivities(final JsonObject activity) {
+        getJsonArray("activites", new JsonArray()).add(activity);
+    }
+    public void addActivities(final JsonArray activities) {
+        getJsonArray("activites", new JsonArray()).addAll(activities);
+    }
+    public JsonArray getActivities() {
+        return getJsonArray("activities", new JsonArray());
     }
     
 }

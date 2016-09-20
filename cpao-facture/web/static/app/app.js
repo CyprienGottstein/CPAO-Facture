@@ -20,41 +20,38 @@ function AppViewModel() {
     self.controller = {};
     self.controller.season = new SeasonController(self);
 
-    self.modal = {};
-    self.modal.inputResource = new InputResourceModal(self, self.model.genericResource.datatypes, self.controller.season);
-    self.modal.removeResource = new RemoveResourceModal(self, self.model.genericResource.datatypes);
-
-//    var activityControllerDatatypes = [
-//        self.model.genericResource.datatype.activity,
-//        self.model.genericResource.datatype.insurance
-//    ];
-//    self.controller.activity = new ResourceController(self,
-//            self.controller.season,
-//            activityControllerDatatypes,
-//            self.modal.inputResource,
-//            self.modal.removeResource);
-//
-//    var adherentControllerDatatypes = [
-//        self.model.genericResource.datatype.home,
-//        self.model.genericResource.datatype.people
-//    ];
-//    self.controller.adherent = new ResourceController(self,
-//            self.controller.season,
-//            adherentControllerDatatypes,
-//            self.modal.inputResource,
-//            self.modal.removeResource);
+    self.modalPrimaryDatatype = {};
+    self.modalPrimaryDatatype.inputModal = new InputResourceModal(self, self.model.genericResource.datatypes, self.controller.season, {
+        idModal : "primaryInputResourceModal",
+        large : true
+    });
+    self.modalPrimaryDatatype.removeModal = new RemoveResourceModal(self, self.model.genericResource.datatypes, "primaryRemoveResourceModal");
+    
+    self.modalSecondaryDatatype = {};
+    self.modalSecondaryDatatype.inputModal = new InputResourceModal(self, self.model.genericResource.datatypes, self.controller.season,{
+        idModal : "secondaryInputResourceModal",
+        large : false
+    });
+    self.modalSecondaryDatatype.removeModal = new RemoveResourceModal(self, self.model.genericResource.datatypes, "secondaryRemoveResourceModal");
+    
+    self.modals = [
+        self.modalPrimaryDatatype,
+        self.modalSecondaryDatatype
+    ];
 
     var allDatatypes = [
         self.model.genericResource.datatype.activity,
         self.model.genericResource.datatype.insurance,
         self.model.genericResource.datatype.home,
-        self.model.genericResource.datatype.people
+        self.model.genericResource.datatype.people,
+        self.model.genericResource.datatype.peopleActivity
     ];
+    
     self.controller.resource = new ResourceController(self,
             self.controller.season,
             allDatatypes,
-            self.modal.inputResource,
-            self.modal.removeResource);
+            self.modalPrimaryDatatype.inputModal,
+            self.modalPrimaryDatatype.removeModal);
 
 
 }
@@ -65,8 +62,11 @@ $(window).on('load', function () {
     var appViewModel = new AppViewModel();
 
     var templates = [
-        'template/activity.html',
-        'template/adherent.html'
+        'template/resource.html',
+        'template/input.html',
+        'template/inputModal.html',
+        'template/removeModal.html',
+        'template/datatable.html'
     ];
 
     var n = 0;
@@ -82,7 +82,6 @@ $(window).on('load', function () {
         template_holder.append(content);
         
         n++;
-        console.log("n : " + n);
         if (n < templates.length) {
             $.get(templates[n], call);
         } else {
@@ -93,6 +92,11 @@ $(window).on('load', function () {
                 appViewModel.controller.season.setSeason(data.season);
             };
             appViewModel.ajax.getCurrentSeason(callback);
+            
+            appViewModel.modals.forEach(function(group){
+                group.inputModal.triggerCloseListener();
+                group.removeModal.triggerCloseListener();
+            });
 
             $('.navbar-lower').affix({
                 offset: {top: 50}

@@ -32,12 +32,14 @@ function Ajax(root) {
     self.static.crudOperation = {};
     self.static.crudOperation.loadAll = {id: 0, rest: "load/all"};
     self.static.crudOperation.loadBySeason = {id: 1, rest: "load/season"};
+    self.static.crudOperation.loadByPeople = {id: 5, rest: "load/people"};
     self.static.crudOperation.save = {id: 2, rest: "save"};
     self.static.crudOperation.update = {id: 3, rest: "update"};
     self.static.crudOperation.remove = {id: 4, rest: "remove"};
     self.static.operations = [
         self.static.crudOperation.loadAll,
         self.static.crudOperation.loadBySeason,
+        self.static.crudOperation.loadByPeople,
         self.static.crudOperation.save,
         self.static.crudOperation.update,
         self.static.crudOperation.remove

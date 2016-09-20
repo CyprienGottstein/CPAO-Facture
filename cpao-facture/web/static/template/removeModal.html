@@ -1,0 +1,23 @@
+<!-- Remove resource modal -->
+<script type="text/html" id="removeModalTemplate">
+    <div class="modal fade" tabindex="-1" role="dialog" data-bind="attr: { id : idModal }, showModal:show">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-bind="click:toggle" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Suppression d'une activité</h4>
+                </div>
+                <div class="modal-body">
+                    <p data-bind="html:label"></p>
+                    <!-- ko if : active -->
+                    <img class="img-centered" src="img/loading.gif" alt="loading">
+                    <!-- /ko -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click:toggle">Fermer</button>
+                    <button type="button" class="btn btn-primary" data-bind="click:remove">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

@@ -106,7 +106,7 @@ public class PeopleDaoImpl implements PeopleDao {
                 people.setLastname(result.getString("LASTNAME"));
                 people.setBirthDate(result.getLong("BIRTHDAY"));
                 people.setHome(result.getInt("HOME"));
-
+                people.addActivities(new JsonArray());
                 array.add(people);
             }
 

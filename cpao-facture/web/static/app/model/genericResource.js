@@ -11,7 +11,7 @@ function GenericResource(root) {
     var self = this;
     // Safe pointer on the root of the application to access other controlers
     self.root = root;
-    
+
     self.static = {};
     self.static.msg = {};
     self.static.msg.announce = {};
@@ -26,6 +26,7 @@ function GenericResource(root) {
     self.datatype = {};
     self.datatype.activity = {
         id: 0,
+        primary: true,
         rest: "activity",
         label: "Activités",
         tab: "#activitySubTab",
@@ -33,45 +34,43 @@ function GenericResource(root) {
         tabLabel: "Gestion des Activités",
         modalLabel: "Saisie d'une activité",
         loadableBySeason: true,
-        msg : self.static.msg
+        msg: self.static.msg
     };
     self.datatype.activity.field = {
         id: {
             id: "id",
             label: "Id",
-            type: "id"
+            type: "id",
+            input: false
         },
         season: {
             id: "season",
             label: "Saison",
-            type: "season"
+            type: "season",
+            input: true
         },
         label: {
             id: "label",
             label: "Description",
-            type: "long-string"
+            type: "long-string",
+            input: true
         },
         licenceCost: {
             id: "licenceCost",
             label: "Licence",
-            type: "float"
+            type: "float",
+            input: true
         },
         cotisationCost: {
             id: "cotisationCost",
             label: "Cotisation",
-            type: "float"
+            type: "float",
+            input: true
         }
     };
 
     self.datatype.activity.fields = [
         self.datatype.activity.field.id,
-        self.datatype.activity.field.season,
-        self.datatype.activity.field.label,
-        self.datatype.activity.field.licenceCost,
-        self.datatype.activity.field.cotisationCost
-    ];
-
-    self.datatype.activity.inputFields = [
         self.datatype.activity.field.season,
         self.datatype.activity.field.label,
         self.datatype.activity.field.licenceCost,
@@ -100,12 +99,13 @@ function GenericResource(root) {
                 .extend({min: {params: 0, message: "Le coût ne peut pas être négatif"}});
 
         self.msg = datatype.msg;
+        self.datatype = datatype;
         self.datatypeId = datatype.id;
-        
+
         self.rebind = function () {
         };
-        
-        self.getLabel = function() {
+
+        self.getLabel = function () {
             return self.msg.announce.start + " l'activité " + self.msg.announce.middle + self.label() + self.msg.announce.end;
         };
 
@@ -117,6 +117,7 @@ function GenericResource(root) {
 
     self.datatype.insurance = {
         id: 1,
+        primary: true,
         rest: "insurance",
         label: "Assurances",
         tab: "#insuranceSubTab",
@@ -124,40 +125,38 @@ function GenericResource(root) {
         tabLabel: "Gestion des Assurances",
         modalLabel: "Saisie d'un mode d'assurance",
         loadableBySeason: true,
-        msg : self.static.msg
+        msg: self.static.msg
     };
 
     self.datatype.insurance.field = {
         id: {
             id: "id",
             label: "Id",
-            type: "id"
+            type: "id",
+            input: false
         },
         season: {
             id: "season",
             label: "Saison",
-            type: "season"
+            type: "season",
+            input: true
         },
         label: {
             id: "label",
             label: "Description",
-            type: "long-string"
+            type: "long-string",
+            input: true
         },
         insuranceCost: {
             id: "insuranceCost",
             label: "Assurance",
-            type: "float"
+            type: "float",
+            input: true
         }
     };
 
     self.datatype.insurance.fields = [
         self.datatype.insurance.field.id,
-        self.datatype.insurance.field.season,
-        self.datatype.insurance.field.label,
-        self.datatype.insurance.field.insuranceCost
-    ];
-
-    self.datatype.insurance.inputFields = [
         self.datatype.insurance.field.season,
         self.datatype.insurance.field.label,
         self.datatype.insurance.field.insuranceCost
@@ -181,12 +180,13 @@ function GenericResource(root) {
                 .extend({min: {params: 0, message: "Le coût ne peut pas être négatif"}});
 
         self.msg = datatype.msg;
+        self.datatype = datatype;
         self.datatypeId = datatype.id;
-        
+
         self.rebind = function () {
         };
-        
-        self.getLabel = function() {
+
+        self.getLabel = function () {
             return self.msg.announce.start + " l'assurance " + self.msg.announce.middle + self.label() + self.msg.announce.end;
         };
 
@@ -198,6 +198,7 @@ function GenericResource(root) {
 
     self.datatype.home = {
         id: 2,
+        primary: true,
         rest: "home",
         label: "Foyers",
         tab: "#homeSubTab",
@@ -205,27 +206,25 @@ function GenericResource(root) {
         tabLabel: "Gestion des Foyers",
         modalLabel: "Saisie d'un foyer",
         loadableBySeason: false,
-        msg : self.static.msg
+        msg: self.static.msg
     };
     self.datatype.home.field = {
         id: {
             id: "id",
             label: "Id",
-            type: "id"
+            type: "id",
+            input: false
         },
         name: {
             id: "name",
             label: "Nom",
-            type: "long-string"
+            type: "long-string",
+            input: true
         }
     };
 
     self.datatype.home.fields = [
         self.datatype.home.field.id,
-        self.datatype.home.field.name
-    ];
-
-    self.datatype.home.inputFields = [
         self.datatype.home.field.name
     ];
 
@@ -242,12 +241,13 @@ function GenericResource(root) {
                 .extend({minLength: {params: 2, message: "Le prénom ne peut pas faire moins de deux caractères."}});
 
         self.msg = datatype.msg;
+        self.datatype = datatype;
         self.datatypeId = datatype.id;
-        
+
         self.rebind = function () {
         };
-        
-        self.getLabel = function() {
+
+        self.getLabel = function () {
             return self.msg.announce.start + " le foyer " + self.msg.announce.middle + self.name() + self.msg.announce.end;
         };
 
@@ -258,8 +258,130 @@ function GenericResource(root) {
 
 
 
+
+    self.datatype.peopleActivity = {
+        id: 4,
+        primary: false,
+        rest: "peopleActivity",
+        label: "Activité par Adhérent",
+        tab: "#peopleActivitySubTab",
+        tabId: "peopleActivitySubTab",
+        tabLabel: "Gestion des Activités par adhérents",
+        modalLabel: "Saisie d'une activité pour un adhérent",
+        loadableBySeason: false,
+        loadableByPeople: true,
+        showInput : ko.observable(false),
+        msg: self.static.msg
+    };
+    self.datatype.peopleActivity.buttons = {
+        add: true
+    };
+    self.datatype.peopleActivity.field = {
+        id: {
+            id: "id",
+            label: "Id",
+            type: "id",
+            input: false
+        },
+        idPeople: {
+            id: "idPeople",
+            label: "Adhérent",
+            type: "select",
+            subtype: {id: 3, field: "lastname"},
+            input: false
+        },
+        idActivity: {
+            id: "idActivity",
+            label: "Activité",
+            type: "select",
+            subtype: {id: 0, field: "label"},
+            input: true
+        },
+        idInsurance: {
+            id: "idInsurance",
+            label: "Assurance",
+            type: "select",
+            subtype: {id: 1, field: "label"},
+            input: true
+        },
+        family: {
+            id: "family",
+            label: "Famille",
+            type: "boolean",
+            input: true
+        },
+        teacher: {
+            id: "teacher",
+            label: "Encadrant",
+            type: "boolean",
+            input: true
+        },
+        observator: {
+            id: "observator",
+            label: "Non-Pratiquant",
+            type: "boolean",
+            input: true
+        },
+        season: {
+            id: "season",
+            label: "saison",
+            type: "season",
+            input: true
+        }
+    };
+
+    self.datatype.peopleActivity.fields = [
+        self.datatype.peopleActivity.field.id,
+        self.datatype.peopleActivity.field.idPeople,
+        self.datatype.peopleActivity.field.idActivity,
+        self.datatype.peopleActivity.field.idInsurance,
+        self.datatype.peopleActivity.field.family,
+        self.datatype.peopleActivity.field.observator,
+        self.datatype.peopleActivity.field.teacher,
+        self.datatype.peopleActivity.field.season
+    ];
+
+    self.datatype.peopleActivity.model = function ($root, $parent, data, datatype) {
+        // Safe pointer on self for model
+        var self = this;
+        // Safe pointer on the root of the application to access other controlers
+        self.root = $root;
+        self.parent = $parent;
+        self.datatype = datatype;
+        self.datatypeId = datatype.id;
+        self.msg = datatype.msg;
+
+        self.id = ko.observable(data.id);
+        self.family = ko.observable(data.family);
+        self.observator = ko.observable(data.observator);
+        self.teacher = ko.observable(data.teacher);
+        self.season = ko.observable(data.season);
+        
+        self.idPeople = ko.observable(new ResourceBinder(self.root, self, data.idPeople, datatype, datatype.field.idPeople.subtype));
+        self.idInsurance = ko.observable(new ResourceBinder(self.root, self, data.idInsurance, datatype, datatype.field.idInsurance.subtype));
+        self.idActivity = ko.observable(new ResourceBinder(self.root, self, data.idActivity, datatype, datatype.field.idActivity.subtype));
+
+        self.rebind = function () {
+            self.idPeople().rebind();
+            self.idInsurance().rebind();
+            self.idActivity().rebind();
+        };
+
+        self.rebind();
+
+        self.getLabel = function () {
+            return self.msg.announce.start + " l'activité <label>" + self.idActivity().label() + "</label> de l'adhérent " + self.msg.announce.middle + self.idPeople().label() + " " + self.msg.announce.end;
+        };
+
+    };
+
+    self.datatype.peopleActivity.resources = ko.observableArray();
+
+
+
     self.datatype.people = {
         id: 3,
+        primary: true,
         rest: "people",
         label: "Adhérents",
         tab: "#peopleSubTab",
@@ -267,40 +389,54 @@ function GenericResource(root) {
         tabLabel: "Gestion des Adhérents",
         modalLabel: "Saisie d'un adhérent",
         loadableBySeason: false,
-        msg : self.static.msg
+        showInput : ko.observable(true),
+        msg: self.static.msg
     };
     self.datatype.people.field = {
         id: {
             id: "id",
             label: "Id",
-            type: "id"
+            type: "id",
+            input: false
         },
         firstname: {
             id: "firstname",
             label: "Prénom",
-            type: "short-string"
+            type: "short-string",
+            input: true
         },
         lastname: {
             id: "lastname",
             label: "Nom",
-            type: "short-string"
+            type: "short-string",
+            input: true
         },
         birthday: {
             id: "birthday",
             label: "Date de naissance",
-            type: "date"
+            type: "date",
+            input: true
         },
         age: {
             id: "age",
             label: "Age",
-            type: "id"
+            type: "id",
+            input: false
         },
         home: {
             id: "home",
             label: "Foyer",
             type: "select",
-            subtype: 2,
-            subfield: "name"
+            subtype: {id: 2, field: "name"},
+            input: true
+        },
+        activities: {
+            id: "activities",
+            label: "Activités",
+            type: "datatype",
+            pointerToDatatype: self.datatype.peopleActivity,
+            list: true,
+            input: true
         }
     };
 
@@ -310,14 +446,8 @@ function GenericResource(root) {
         self.datatype.people.field.lastname,
         self.datatype.people.field.birthday,
         self.datatype.people.field.age,
-        self.datatype.people.field.home
-    ];
-
-    self.datatype.people.inputFields = [
-        self.datatype.people.field.firstname,
-        self.datatype.people.field.lastname,
-        self.datatype.people.field.birthday,
-        self.datatype.people.field.home
+        self.datatype.people.field.home,
+        self.datatype.people.field.activities
     ];
 
     self.datatype.people.model = function ($root, $parent, data, datatype) {
@@ -326,7 +456,9 @@ function GenericResource(root) {
         // Safe pointer on the root of the application to access other controlers
         self.root = $root;
         self.parent = $parent;
+
         self.msg = datatype.msg;
+        self.datatype = datatype;
         self.datatypeId = datatype.id;
 
         self.id = ko.observable(data.id);
@@ -348,49 +480,15 @@ function GenericResource(root) {
         var age = Math.floor(new Date(diff).getTime() / (1000 * 60 * 60 * 24 * 365.25));
 
         self.age = ko.observable(age);
-        self.home = ko.observable(new HomeAdherent(self.root, self, data.home, datatype));
+        self.home = ko.observable(new ResourceBinder(self.root, self, data.home, datatype, datatype.field.home.subtype));
 
         self.rebind = function () {
             self.home().rebind();
         };
-        
-        self.getLabel = function() {
+
+        self.getLabel = function () {
             return self.msg.announce.start + " l'adhérent " + self.msg.announce.middle + self.firstname() + " " + self.lastname() + self.msg.announce.end;
         };
-
-        function HomeAdherent($root, $parent, data, datatype) {
-
-            // Safe pointer on self for model
-            var self = this;
-            // Safe pointer on the root of the application to access other controlers
-            self.root = $root;
-            self.parent = $parent;
-            self.datatypeId = datatype.id;
-            self.subDatatypeId = datatype.field.home.subtype;
-
-            self.id = ko.observable(data);
-            self.label = ko.observable("NOT-FOUND");
-
-            self.rebind = function () {
-                
-                var datatype = null;
-                self.parent.parent.datatypes().forEach(function (dt) {
-                    if (dt.id === self.subDatatypeId) {
-                        datatype = dt;
-                    }
-                });
-
-                datatype.resources().forEach(function (resource) {
-                    if (resource.id() === self.id()) {
-                        self.label(resource.name());
-                    }
-                });
-            };
-
-        }
-        ;
-
-
 
     };
 
@@ -400,6 +498,7 @@ function GenericResource(root) {
         self.datatype.activity,
         self.datatype.insurance,
         self.datatype.people,
+        self.datatype.peopleActivity,
         self.datatype.home
     ]);
 
