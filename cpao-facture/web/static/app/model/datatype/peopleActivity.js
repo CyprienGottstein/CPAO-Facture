@@ -166,12 +166,9 @@ function PeopleActivityDatatype($root, $parent, baseDatatype, msg) {
             
             datatype().pack().resources().forEach(function (resource) {
                 if (resource.id() === self.idActivity().id()) {
-                    console.log("proc");
                     price += resource.licenceCost() + resource.cotisationCost();
                 }
             });
-            
-            console.log(price);
             
             self.root.model.datatypeRoot.datatypes().forEach(function (dt) {
                 if (dt().id === self.datatype.field.idInsurance.subtype.id) {
@@ -184,8 +181,6 @@ function PeopleActivityDatatype($root, $parent, baseDatatype, msg) {
                     price += resource.insuranceCost();
                 }
             });
-            
-            console.log(price);
 
 
             str += price + " euros";

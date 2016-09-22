@@ -22,12 +22,12 @@ public class App {
         deployer.deploy();
         
         DatabaseScript dbscript = new DatabaseScript(vertx);
-        dbscript.generateDatabase();
-        dbscript.retrieveActivity();
-        dbscript.retrieveInsurance();
-        dbscript.retrieveHomeBatch();  
-        dbscript.retrievePeople();
-        dbscript.addPaymentTypeBatch();
+//        dbscript.generateDatabase();
+//        dbscript.retrieveActivity();
+//        dbscript.retrieveInsurance();
+//        dbscript.retrieveHomeBatch();  
+//        dbscript.retrievePeople();
+//        dbscript.addPaymentTypeBatch();
         
 
     }

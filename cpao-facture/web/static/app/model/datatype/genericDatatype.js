@@ -131,6 +131,7 @@ function GenericDatatype(root) {
                 array.push(resourceObject);
             });
             datatype.pack().resources(array);
+            
         };
 
         if (datatype.primary || datatype.static) {
@@ -191,7 +192,7 @@ function GenericDatatype(root) {
                 array.push(resourceObject);
             });
 //            arrayObs(array);
-
+            
             if (typeof followup !== "undefined") {
                 followup(array);
             }

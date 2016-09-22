@@ -7,7 +7,6 @@ and open the template in the editor.
 <!-- param : InputResourceController -->
 <script type="text/html" id="situationTemplate">
     <div class="container-fluid">
-        <!--<div class="col-sm-offset-1 col-sm-10">-->
         <div class="row">
             <div class="col-sm-3">
                 <span> Total à payer :</span>
@@ -17,21 +16,21 @@ and open the template in the editor.
                 </span>
             </div>
             <div class="col-sm-3">
-                <span> Total encaissé :</span>
+                <span> Total déposé :</span>
                 <span>
-                    <label data-bind="text: totalCashed"></label>
+                    <label data-bind="text: totalDeposit"></label>
                     <label> euros </label>
                 </span>
             </div>
             <div class="col-sm-3">
-                <span> Total soldé :</span>
+                <span> Total soldé/encaissé :</span>
                 <span>
                     <label data-bind="text: totalSolded"></label>
                     <label> euros </label>
                 </span>
             </div>
             <div class="col-sm-3">
-                <span> Manque à payer :</span>
+                <span> Reste à payer :</span>
                 <span>
                     <label data-bind="text: totalMissing"></label>
                     <label> euros </label>

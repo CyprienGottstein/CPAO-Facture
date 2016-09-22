@@ -13,6 +13,7 @@ import io.vertx.core.json.JsonArray;
  */
 public interface BillGenerator {
     
-    public JsonArray retrieveHomeData(final int home, final int season);
+    public JsonArray retrieveHomeActivities(final int home, final int season);
+    public JsonArray retrieveHomePayments(final int home, final int season);
     
 }

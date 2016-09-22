@@ -31,17 +31,37 @@ public class BillGeneratorVerticle extends AbstractVerticle {
                 final int id = message.body().getInteger("id");
                 final int season = message.body().getInteger("season");
                 
-                final JsonArray array = billGenerator.retrieveHomeData(id, season);
+                final JsonArray activities = billGenerator.retrieveHomeActivities(id, season);
                 
                 float totalCost = 0;
-                for (int i = 0; i < array.size(); i++){
-                    final JsonObject line = array.getJsonObject(i);
+                float totalDeposit = 0;
+                float totalSolded = 0;
+                float totalMissing = 0;
+                
+                for (int i = 0; i < activities.size(); i++){
+                    final JsonObject line = activities.getJsonObject(i);
                     totalCost += line.getFloat("insuranceCost");
                     totalCost += line.getFloat("cotisationCost");
                     totalCost += line.getFloat("licenceCost");
                 }
                 
-                final JsonObject o = new JsonObject().put("totalCost", totalCost);
+                final JsonArray payments = billGenerator.retrieveHomePayments(id, season);
+                
+                for (int i = 0; i < payments.size(); i++){
+                    final JsonObject line = payments.getJsonObject(i);
+                    totalDeposit += line.getFloat("amount");
+                    if (line.getBoolean("solded")){
+                        totalSolded += line.getFloat("amount");
+                    }
+                }
+                
+                totalMissing = totalCost - totalDeposit;
+                
+                final JsonObject o = new JsonObject()
+                        .put("totalCost", totalCost)
+                        .put("totalDeposit", totalDeposit)
+                        .put("totalSolded", totalSolded)
+                        .put("totalMissing", totalMissing);
                 message.reply(o);
                 
             }

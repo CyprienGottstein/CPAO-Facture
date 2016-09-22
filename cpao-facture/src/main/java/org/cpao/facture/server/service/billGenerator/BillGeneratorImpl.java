@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cpao.facture.server.dao.Database;
 import org.cpao.facture.server.dao.DatabaseScript;
-import org.cpao.facture.server.model.People;
 
 /**
  *
@@ -25,7 +24,7 @@ import org.cpao.facture.server.model.People;
 public class BillGeneratorImpl implements BillGenerator {
 
     @Override
-    public JsonArray retrieveHomeData(int home, int season) {
+    public JsonArray retrieveHomeActivities(int home, int season) {
         try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
 
             final Statement s = c.createStatement();
@@ -49,6 +48,36 @@ public class BillGeneratorImpl implements BillGenerator {
                 line.put("teacher", result.getFloat("TEACHER"));
                 line.put("observator", result.getFloat("OBSERVATOR"));
                 line.put("family", result.getFloat("FAMILY"));
+                
+                array.add(line);
+            }
+            
+            return array;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+            return new JsonArray();
+        }
+    }
+    
+    @Override
+    public JsonArray retrieveHomePayments(int home, int season) {
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+
+            final ResultSet result = s.executeQuery("SELECT CPAO.PAYMENT.AMOUNT AS AMOUNT, CPAO.PAYMENT.SOLDED AS SOLDED\n"
+                    + "FROM CPAO.HOME, CPAO.PAYMENT\n"
+                    + "WHERE CPAO.HOME.ID = " + home + " "
+                    + "AND CPAO.PAYMENT.SEASON = " + season + " "
+                    + "AND CPAO.HOME.ID = CPAO.PAYMENT.ID_HOME");
+            
+            final JsonArray array = new JsonArray();
+            
+            while (result.next()) {
+                final JsonObject line = new JsonObject();
+                line.put("amount", result.getFloat("AMOUNT"));
+                line.put("solded", result.getBoolean("SOLDED"));
                 
                 array.add(line);
             }

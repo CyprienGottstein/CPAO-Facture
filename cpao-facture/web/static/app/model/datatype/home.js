@@ -80,6 +80,11 @@ function HomeDatatype($root, $parent, baseDatatype, msg) {
         self.field.payments,
         self.field.situation
     ];
+    
+    self.field.situation.dependencies = [
+        self.field.peoples.pointerToDatatype,
+        self.field.payments.pointerToDatatype
+    ];
 
     self.model = function ($root, $parent, data, datatype, pack) {
         // Safe pointer on self for model

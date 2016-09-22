@@ -171,7 +171,7 @@ function InputResourceController($root, primary) {
                     });
                     break;
                 case "template":
-                    fieldObs.template = ko.observable(new HomeBillTemplate(self.root));
+                    fieldObs.template = ko.observable(new HomeBillController(self.root, fieldObs.metadata.dependencies));
                     break;
             }
 
@@ -271,7 +271,7 @@ function InputResourceController($root, primary) {
                             self.editField(field.compositeFieldsList[id], resource);
                             break;
                         case "template":
-                            fieldObs.template(new HomeBillTemplate(self.root));
+//                            fieldObs.template = ko.observable(new HomeBillController(self.root, fieldObs.metadata.dependencies));
                             break;
                         default:
                             fieldObs.data(resource[field.id]());

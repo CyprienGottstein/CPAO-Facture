@@ -25,6 +25,11 @@ function InputResourceModal($root, datatypes, seasonController, data, primary) {
         self.inputResourceController = controller;
     };
 
+    self.subscriber = ko.observable();
+    self.subscribe = function (controller) {
+        self.subscriber(controller);
+    };
+
     self.close = function () {
         self.show(false);
         self.inputResourceController.reset();
@@ -156,6 +161,10 @@ function InputResourceModal($root, datatypes, seasonController, data, primary) {
                 }
             } else {
                 self.failure(true);
+            }
+            
+            if(self.subscriber()){
+                self.subscriber().reload();
             }
 
             self.active(false);

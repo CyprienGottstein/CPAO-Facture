@@ -133,7 +133,7 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
         },
         solded: {
             id: "solded",
-            label: "Soldé",
+            label: "Soldé/Encaissé",
             type: "boolean",
             input: true,
             show: true

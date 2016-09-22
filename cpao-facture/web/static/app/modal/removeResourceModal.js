@@ -13,6 +13,11 @@ function RemoveResourceModal($root, datatypes, idModal) {
     self.datatype = null;
     self.pack = null;
     
+    self.subscriber = ko.observable();
+    self.subscribe = function (controller) {
+        self.subscriber(controller);
+    };
+    
     self.label = ko.observable("");
 
     self.show = ko.observable(false);
@@ -59,6 +64,9 @@ function RemoveResourceModal($root, datatypes, idModal) {
 //                self.label(self.static.msg.failure.begin + self.resource.getLabel() + self.static.msg.failure.end);
             }
 
+            if(self.subscriber()){
+                self.subscriber().reload();
+            }
 
             self.active(false);
         };
