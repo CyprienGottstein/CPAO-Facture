@@ -1,4 +1,5 @@
 <!-- Input Resource modal -->
+<!-- param : InputResourceModal -->
 <script type="text/html" id="inputModalTemplate">
     <div class="modal fade" tabindex="-1" role="dialog" data-bind="attr: { id : idModal }, showModal:show">
         <div class="modal-dialog" style="width:1400px" role="document" data-bind="style : { width : large ? '1400px' : '' }">
@@ -17,7 +18,7 @@
                 <!-- ko if : failure() || active -->
                 <div class="modal-body modal-body-split">
                     <!-- ko if : failure -->
-                    <p class="ajax-error">La sauvegarde de l'activité a échoué.</p>
+                    <p class="ajax-error">La sauvegarde de la ressource a échoué.</p>
                     <!-- /ko -->
                     <!-- ko if : active -->
                     <img class="img-centered" src="img/loading.gif" alt="loading">

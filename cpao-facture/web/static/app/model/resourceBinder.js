@@ -22,13 +22,13 @@ function ResourceBinder($root, $parent, data, datatype, subDatatype) {
     self.rebind = function () {
 
         var datatype = null;
-        self.root.model.genericResource.datatypes().forEach(function (dt) {
-            if (dt.id === self.targetDatatype) {
+        self.root.model.datatypeRoot.datatypes().forEach(function (dt) {
+            if (dt().id === self.targetDatatype) {
                 datatype = dt;
             }
         });
 
-        datatype.resources().forEach(function (resource) {
+        datatype().pack().resources().forEach(function (resource) {
             if (resource.id() === self.id()) {
                 self.label(resource[self.subDatatype.field]());
             }

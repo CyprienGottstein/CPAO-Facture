@@ -69,7 +69,7 @@ public class InsuranceDaoVerticle extends AbstractVerticle {
             public void handle(Message<JsonObject> message){
                 
                 final JsonObject data = message.body();
-                final int season = data.getInteger("season");
+                final int season = data.getInteger("id");
                 final JsonArray array = dao.loadBySeason(season);
                 
                 message.reply(array);

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!-- param : InputResourceController -->
+<script type="text/html" id="situationTemplate">
+    <div class="container-fluid">
+        <!--<div class="col-sm-offset-1 col-sm-10">-->
+        <div class="row">
+            <div class="col-sm-3">
+                <span> Total à payer :</span>
+                <span>
+                    <label data-bind="text: total"></label>
+                    <label> euros </label>
+                </span>
+            </div>
+            <div class="col-sm-3">
+                <span> Total encaissé :</span>
+                <span>
+                    <label data-bind="text: totalCashed"></label>
+                    <label> euros </label>
+                </span>
+            </div>
+            <div class="col-sm-3">
+                <span> Total soldé :</span>
+                <span>
+                    <label data-bind="text: totalSolded"></label>
+                    <label> euros </label>
+                </span>
+            </div>
+            <div class="col-sm-3">
+                <span> Manque à payer :</span>
+                <span>
+                    <label data-bind="text: totalMissing"></label>
+                    <label> euros </label>
+                </span>
+            </div>
+        </div>
+    </div>
+</script>

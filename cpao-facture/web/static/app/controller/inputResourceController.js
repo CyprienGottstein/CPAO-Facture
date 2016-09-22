@@ -5,13 +5,13 @@
  */
 
 
-function InputResourceController($root, $parent) {
+function InputResourceController($root, primary) {
 
     // Safe pointer on self for model
     var self = this;
     // Safe pointer on the root of the application to access other controlers
     self.root = $root;
-    self.parent = $parent;
+    self.primary = primary;
 
     self.title = ko.observable("No title");
 
@@ -22,13 +22,34 @@ function InputResourceController($root, $parent) {
     self.resourceFields = ko.observableArray();
     self.resourceValidator = ko.validatedObservable();
 
+    self.forceField = ko.observable();
+    self.forceId = ko.observable();
+    self.forcePack = ko.observable();
+
+    self.setForceField = function (field) {
+        self.forceField(field);
+    };
+    self.setForceId = function (id) {
+        self.forceId(id);
+    };
+    self.setForcePack = function (pack) {
+        self.forcePack(pack);
+    };
+
     self.prepareNew = function () {
 
         var datatype = self.datatype();
-
         var array = [];
+        self.prepareNewField(datatype, datatype.fields, array);
+        self.resourceFields(array);
 
-        datatype.fields.forEach(function (field) {
+    };
+
+    self.prepareNewField = function (datatype, fields, array) {
+
+//        var array = [];
+
+        fields.forEach(function (field) {
             var fieldObs = {};
             fieldObs.metadata = field;
 
@@ -67,9 +88,9 @@ function InputResourceController($root, $parent) {
                     fieldObs.data = ko.observable(false);
                     break;
                 case "select":
-                    self.root.controller.resource.datatypes().forEach(function (resourceDatatype) {
-                        if (resourceDatatype.id === fieldObs.metadata.subtype.id) {
-                            fieldObs.options = resourceDatatype.resources;
+                    self.root.model.datatypeRoot.datatypes().forEach(function (datatype) {
+                        if (datatype().id === fieldObs.metadata.subtype.id) {
+                            fieldObs.options = datatype().pack().resources;
                         }
                     });
 
@@ -78,13 +99,79 @@ function InputResourceController($root, $parent) {
                     fieldObs.data.isModified(false);
                     break;
                 case "datatype":
-                    fieldObs.data = new InputResourceController(self.root, self.root.modalSecondaryDatatype.inputModal);
+                    fieldObs.pack = ko.observable(fieldObs.metadata.pointerToDatatype().getDatapack());
                     fieldObs.inputModal = self.root.modalSecondaryDatatype.inputModal;
                     fieldObs.removeModal = self.root.modalSecondaryDatatype.removeModal;
-                    fieldObs.metadata.pointerToDatatype.enhance(fieldObs.inputModal, fieldObs.removeModal);
+                    break;
+                case "recursive":
+                    fieldObs.recursive = ko.observable({
+                        resources: []
+                    });
+                    break;
+                case "composite":
+                    // add all observables
+                    self.prepareNewField(datatype, field.compositeFields, array);
 
-//                    fieldObs.data.datatype(fieldObs.metadata.pointerToDatatype);
-//                    fieldObs.metadata.pointerToDatatype.inputResourceController(fieldObs.data);
+                    var phase1 = [];
+                    var phase2 = [];
+
+                    array.forEach(function (resourceField2) {
+                        field.compositeFields.forEach(function (compositeField) {
+                            if (compositeField.id === resourceField2.metadata.id) {
+                                resourceField2.metadata.input = false;
+                            }
+                        });
+                        phase1.push(resourceField2);
+                    });
+
+                    phase1.forEach(function (resourceField2) {
+                        field.compositeFieldsList[0].forEach(function (compositeField) {
+                            if (compositeField.id === resourceField2.metadata.id) {
+                                resourceField2.metadata.input = true;
+                            }
+                        });
+                        phase2.push(resourceField2);
+                    });
+
+                    self.resourceFields([]);
+                    self.resourceFields(phase2);
+
+                    array.forEach(function (resourceField) {
+                        if (resourceField.metadata.id === field.dependency) {
+                            // show inputs according to currently type selected (dependency)
+                            resourceField.data.subscribe(function (resourceBinder) {
+
+                                var resourceFieldsArray = self.resourceFields();
+                                var phase1 = [];
+                                var phase2 = [];
+
+                                resourceFieldsArray.forEach(function (resourceField2) {
+                                    field.compositeFields.forEach(function (compositeField) {
+                                        if (compositeField.id === resourceField2.metadata.id) {
+                                            resourceField2.metadata.input = false;
+                                        }
+                                    });
+                                    phase1.push(resourceField2);
+                                });
+
+                                phase1.forEach(function (resourceField2) {
+                                    field.compositeFieldsList[resourceBinder[0].id()].forEach(function (compositeField) {
+                                        if (compositeField.id === resourceField2.metadata.id) {
+                                            resourceField2.metadata.input = true;
+                                        }
+                                    });
+                                    phase2.push(resourceField2);
+                                });
+
+                                self.resourceFields([]);
+                                self.resourceFields(phase2);
+
+                            });
+                        }
+                    });
+                    break;
+                case "template":
+                    fieldObs.template = ko.observable(new HomeBillTemplate(self.root));
                     break;
             }
 
@@ -92,7 +179,7 @@ function InputResourceController($root, $parent) {
 
         });
 
-        self.resourceFields(array);
+        return array;
 
     };
 
@@ -112,11 +199,28 @@ function InputResourceController($root, $parent) {
 
         self.datatype(datatype);
 
-        datatype.fields.forEach(function (field) {
+        self.editField(datatype.fields, resource);
+
+        var group = {};
+        var n = 0;
+
+        self.resourceFields().forEach(function (fieldObs) {
+            if (fieldObs.metadata.type !== "season") {
+                var label = "v" + n;
+                group[label] = fieldObs.data;
+                n += 1;
+            }
+        });
+
+//        self.resourceValidator(group);
+    };
+
+    self.editField = function (fields, resource) {
+
+        fields.forEach(function (field) {
             var array = self.resourceFields();
             array.forEach(function (fieldObs) {
                 if (field.id === fieldObs.metadata.id) {
-
                     switch (fieldObs.metadata.type) {
                         case "id":
                             break
@@ -131,8 +235,43 @@ function InputResourceController($root, $parent) {
                             });
                             break;
                         case "datatype":
-                            fieldObs.metadata.pointerToDatatype.setId(resource.id());
-                            fieldObs.metadata.pointerToDatatype.reload();
+                            fieldObs.pack(fieldObs.metadata.pointerToDatatype().getDatapack());
+                            fieldObs.inputModal = self.root.modalSecondaryDatatype.inputModal;
+                            fieldObs.removeModal = self.root.modalSecondaryDatatype.removeModal;
+
+                            fieldObs.inputModal.inputResourceController.setForceField(fieldObs.metadata.restrictBy);
+                            fieldObs.inputModal.inputResourceController.setForceId(resource.id());
+                            fieldObs.inputModal.inputResourceController.setForcePack(fieldObs.pack());
+
+                            switch (fieldObs.metadata.reloadBy) {
+                                case "people":
+                                    fieldObs.metadata.pointerToDatatype().reload.people(resource.id(), fieldObs.pack(), function (array) {
+                                        fieldObs.pack().resources(array);
+                                    });
+                                    break;
+                                case "home":
+                                    fieldObs.metadata.pointerToDatatype().reload.home(resource.id(), fieldObs.pack(), function (array) {
+                                        fieldObs.pack().resources(array);
+                                    });
+                                    break;
+                            }
+
+                            break;
+                        case "recursive":
+                            fieldObs.recursive(new RecursiveReaderController(self.root, self, fieldObs.metadata.pointerToDatatype(), fieldObs.metadata.pointerToDatatype().getDatapack(), resource, field));
+                            break;
+                        case "composite":
+                            var id = null;
+                            array.forEach(function (resourceField) {
+                                if (resourceField.metadata.id === field.dependency) {
+                                    id = resourceField.data()[0].id()
+                                }
+                            });
+
+                            self.editField(field.compositeFieldsList[id], resource);
+                            break;
+                        case "template":
+                            fieldObs.template(new HomeBillTemplate(self.root));
                             break;
                         default:
                             fieldObs.data(resource[field.id]());
@@ -143,19 +282,6 @@ function InputResourceController($root, $parent) {
 
             self.resourceFields(array);
         });
-
-        var group = {};
-        var n = 0;
-
-        self.resourceFields().forEach(function (fieldObs) {
-            if (fieldObs.metadata.type !== "season") {
-                var label = "v" + n;
-                group[label] = fieldObs.data;
-                n += 1;
-            }
-        });
-
-//        self.resourceValidator(group);
     };
 
     self.reset = function () {

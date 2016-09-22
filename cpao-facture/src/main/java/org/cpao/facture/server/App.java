@@ -27,7 +27,7 @@ public class App {
         dbscript.retrieveInsurance();
         dbscript.retrieveHomeBatch();  
         dbscript.retrievePeople();
-
+        dbscript.addPaymentTypeBatch();
         
 
     }

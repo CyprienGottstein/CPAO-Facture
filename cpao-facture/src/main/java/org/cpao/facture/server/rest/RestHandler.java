@@ -58,7 +58,7 @@ public class RestHandler {
         System.out.println("body raw : " + routingContext.getBody());
         final JsonObject body = routingContext.getBodyAsJson();
         System.out.println("body : " + body.encodePrettily());
-        final int season = body.getInteger("season");
+        final int season = body.getInteger("id");
 
         System.out.println("Loading all activity for season : " + season);
 
@@ -167,7 +167,7 @@ public class RestHandler {
     public void insuranceLoadBySeason(RoutingContext routingContext) {
 
         final JsonObject body = routingContext.getBodyAsJson();
-        final int season = body.getInteger("season");
+        final int season = body.getInteger("id");
 
         System.out.println("Loading all insurance for season : " + season);
 
@@ -276,6 +276,28 @@ public class RestHandler {
         System.out.println("Loading all peoples !");
 
         vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-people-load-all", null, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+    
+    public void peopleLoadByHome(RoutingContext routingContext) {
+        
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int home = body.getInteger("id");
+
+        System.out.println("Loading all people with home id : " + home);
+        System.out.println("body : " + body.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-people-load-home", body, new Handler<AsyncResult<Message<JsonArray>>>() {
             @Override
             public void handle(AsyncResult<Message<JsonArray>> result) {
                 HttpServerResponse response = routingContext.response();
@@ -448,7 +470,7 @@ public class RestHandler {
     public void peopleActivityLoadByPeople(RoutingContext routingContext) {
         
         final JsonObject body = routingContext.getBodyAsJson();
-        final int people = body.getInteger("people");
+        final int people = body.getInteger("id");
 
         System.out.println("Loading all activities for people with id : " + people);
         System.out.println("body : " + body.encodePrettily());
@@ -521,6 +543,226 @@ public class RestHandler {
         System.out.println("Updating peopleActivity with id : " + id + " with following data : " + data.encodePrettily());
 
         vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-peopleActivity-update", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+    
+    public void paymentLoadAll(RoutingContext routingContext) {
+
+        System.out.println("Loading all payments !");
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-payment-load-all", null, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+    
+    public void paymentLoadByHome(RoutingContext routingContext) {
+        
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int people = body.getInteger("id");
+
+        System.out.println("Loading all payments for people with id : " + people);
+        System.out.println("body : " + body.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-payment-load-home", body, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+
+    public void paymentSave(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final JsonObject peopleActivity = body.getJsonObject("payment");
+
+        System.out.println("Saving payment : " + peopleActivity.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-payment-save", peopleActivity, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+
+    public void paymentRemove(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Removing payment with id : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-payment-remove", id, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+
+    public void paymentUpdate(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+        final JsonObject data = body.getJsonObject("payment");
+
+        System.out.println("Updating payment with id : " + id + " with following data : " + data.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-payment-update", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+    
+    public void paymentTypeLoadAll(RoutingContext routingContext) {
+
+        System.out.println("Loading all payments types !");
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-paymentType-load-all", null, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+
+    public void paymentTypeSave(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final JsonObject paymentType = body.getJsonObject("paymentType");
+
+        System.out.println("Saving paymentType : " + paymentType.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-paymentType-save", paymentType, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+
+    public void paymentTypeRemove(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Removing payment type with id : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-paymentType-remove", id, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+
+    public void paymentTypeUpdate(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+        final JsonObject data = body.getJsonObject("paymentType");
+
+        System.out.println("Updating payment type with id : " + id + " with following data : " + data.encodePrettily());
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-paymentType-update", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+    
+    public void billGenerate(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+        final int season = body.getInteger("season");
+
+        System.out.println("Generating bill for home with id : " + id + " for season : " + season);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate", body, new Handler<AsyncResult<Message<JsonObject>>>() {
             @Override
             public void handle(AsyncResult<Message<JsonObject>> result) {
                 HttpServerResponse response = routingContext.response();

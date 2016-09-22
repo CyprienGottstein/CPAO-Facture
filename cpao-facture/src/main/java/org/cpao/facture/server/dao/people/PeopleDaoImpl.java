@@ -74,8 +74,8 @@ public class PeopleDaoImpl implements PeopleDao {
                     + "FIRSTNAME = '" + people.getString("firstname") + "',"
                     + "LASTNAME = '" + people.getString("lastname") + "',"
                     + "BIRTHDAY = " + people.getLong("birthday")
-                    + " WHERE ID = " + id + "; UPDATE CPAO.HOME_PERSON SET "
-                    + "ID_HOME = " + people.getInteger("home") + " WHERE ID_PERSON = " + id);
+                    + " WHERE ID = " + id + ";"
+                    + "UPDATE CPAO.HOME_PERSON SET ID_HOME = " + people.getInteger("idHome") + " WHERE ID_PERSON = " + id);
 
             return result;
 
@@ -97,6 +97,40 @@ public class PeopleDaoImpl implements PeopleDao {
                     + "FROM CPAO.PERSON LEFT JOIN CPAO.HOME_PERSON "
                     + "ON CPAO.PERSON.ID = CPAO.HOME_PERSON.ID_PERSON "
                     + "ORDER BY ID");
+            final JsonArray array = new JsonArray();
+
+            while (result.next()) {
+                final People people = new People();
+                people.setId(result.getInt("id"));
+                people.setFirstname(result.getString("FIRSTNAME"));
+                people.setLastname(result.getString("LASTNAME"));
+                people.setBirthDate(result.getLong("BIRTHDAY"));
+                people.setHome(result.getInt("HOME"));
+                people.addActivities(new JsonArray());
+                array.add(people);
+            }
+
+            return array;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+            return new JsonArray();
+        }
+
+    }
+    
+    @Override
+    public JsonArray loadByHome(final int home) {
+
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+
+            final ResultSet result = s.executeQuery("SELECT CPAO.PERSON.*, CPAO.HOME_PERSON.ID_HOME AS HOME "
+                    + "FROM CPAO.PERSON LEFT JOIN CPAO.HOME_PERSON "
+                    + "ON CPAO.PERSON.ID = CPAO.HOME_PERSON.ID_PERSON "
+                    + "WHERE CPAO.HOME_PERSON.ID_HOME = " + home
+                    + " ORDER BY ID");
             final JsonArray array = new JsonArray();
 
             while (result.next()) {

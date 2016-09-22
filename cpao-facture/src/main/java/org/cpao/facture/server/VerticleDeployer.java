@@ -16,9 +16,12 @@ import java.util.logging.Logger;
 import org.cpao.facture.server.dao.activity.ActivityDaoVerticle;
 import org.cpao.facture.server.dao.home.HomeDaoVerticle;
 import org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle;
+import org.cpao.facture.server.dao.payment.PaymentDaoVerticle;
+import org.cpao.facture.server.dao.paymentType.PaymentTypeDaoVerticle;
 import org.cpao.facture.server.dao.people.PeopleDaoVerticle;
 import org.cpao.facture.server.dao.peopleactivity.PeopleActivityDaoVerticle;
 import org.cpao.facture.server.rest.RestVerticle;
+import org.cpao.facture.server.service.billGenerator.BillGeneratorVerticle;
 
 /**
  *
@@ -40,10 +43,14 @@ public class VerticleDeployer {
         verticlesToDeploy.add(PeopleDaoVerticle.class.getCanonicalName());
         verticlesToDeploy.add(HomeDaoVerticle.class.getCanonicalName());
         verticlesToDeploy.add(PeopleActivityDaoVerticle.class.getCanonicalName());
+        verticlesToDeploy.add(PaymentDaoVerticle.class.getCanonicalName());
+        verticlesToDeploy.add(PaymentTypeDaoVerticle.class.getCanonicalName());
+        verticlesToDeploy.add(BillGeneratorVerticle.class.getCanonicalName());
+        
         verticlesToDeploy.add(CentralVerticle.class.getName());
         verticlesToDeploy.add(RestVerticle.class.getName());
 
-        final CountDownLatch latch = new CountDownLatch(7);
+        final CountDownLatch latch = new CountDownLatch(10);
         
         verticlesToDeploy.forEach(verticle -> {
             vertx.deployVerticle(verticle, new Handler<AsyncResult<String>>() {

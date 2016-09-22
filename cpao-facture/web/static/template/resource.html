@@ -10,7 +10,8 @@ and open the template in the editor.
             <div class="container">
                 <div class="collapse navbar-collapse collapse-buttons">
                     <ul class="nav navbar-nav">
-                        <!-- ko foreach : controller.resource.datatypes -->
+                        <!-- foreach : controller.resource.datatypes -->
+                        <!-- ko foreach : model.datatypeRoot.datatypes -->
                             <!-- ko if : $data.primary -->
                                 <li><a data-toggle="tab" data-bind="attr:{ href : $data.tab }, text:$data.label, click:$data.toggle"></a></li>
                             <!-- /ko -->
@@ -19,15 +20,18 @@ and open the template in the editor.
                 </div>
             </div>
         </nav>
-        <!-- ko foreach : controller.resource.datatypes -->
-        <div class="tab-pane fade" data-bind="attr:{ id : $data.tabId }">
-            <div class="container">
-                <div class="row">
-                    <h1 data-bind="text:$data.tabLabel"></h1>
+        <!-- foreach : controller.resource.datatypes -->
+        <!-- ko foreach : model.datatypeRoot.datatypes -->
+            <!-- ko if : $data.primary -->
+            <div class="tab-pane fade" data-bind="attr:{ id : $data.tabId }">
+                <div class="container">
+                    <div class="row">
+                        <h1 data-bind="text:$data.tabLabel"></h1>
+                    </div>
+                    <div data-bind="template: { name: 'datatableTemplate', data: $data.pack }"></div>
                 </div>
-                <div data-bind="template: { name: 'datatableTemplate', data: $data }"></div>
             </div>
-        </div>
+            <!-- /ko -->
         <!-- /ko -->
     </div>
 </script>

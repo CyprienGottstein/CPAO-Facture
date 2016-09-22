@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+ -->
+ <!-- param : RecursiveReaderController -->
+<script type="text/html" id="recursiveListTemplate">
+    <div class="container-fluid">
+    <!-- ko foreach : { data : resources, as : 'resource' } -->
+        <div class="row">
+            <span>
+                <span class="col-sm-6" data-bind="text : resource.getDescription() "></span>
+                <span class="col-sm-2" style="text-align: right">
+                    <label data-bind="text : resource.getPrice()"></label>
+                </span>
+            </span>
+        </div>
+        <div class="row">
+                <!-- ko foreach : { data : $parent.fields, as : 'fieldmd' } -->
+                    <!-- ko if : $data.type === 'datatype' -->
+                        <!--<div class="col-sm-2"> - </div>-->
+                        <div class="col-sm-offset-1 col-sm-10" data-bind="template: { name: 'recursiveListTemplate', data: resource[fieldmd.id] }"></div>
+                    <!-- /ko -->
+
+                <!-- /ko -->
+        </div>
+    <!-- /ko -->
+    </div>
+</script>

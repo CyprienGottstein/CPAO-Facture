@@ -77,6 +77,19 @@ public class PeopleDaoVerticle extends AbstractVerticle {
                 
             }
         });
+        
+        bus.consumer("org.cpao.facture.server.dao.people.PeopleDaoVerticle-load-home", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message){
+                
+                final JsonObject data = message.body();
+                final int season = data.getInteger("id");
+                final JsonArray array = dao.loadByHome(season);
+                
+                message.reply(array);
+                
+            }
+        });
     }
     
 }

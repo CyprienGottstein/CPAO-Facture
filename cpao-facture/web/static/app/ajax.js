@@ -21,28 +21,24 @@ function Ajax(root) {
     self.static.defaultHeader.dataType = "text";
 //    self.static.defaultHeader.crossDomain = true;
 
-    self.static.datatype = {};
-    self.static.datatype.activity = {id: 0, rest: "activity"};
-    self.static.datatype.insurance = {id: 1, rest: "insurance"};
-    self.static.datatypes = [
-        self.static.datatype.activity,
-        self.static.datatype.insurance
-    ];
-
     self.static.crudOperation = {};
     self.static.crudOperation.loadAll = {id: 0, rest: "load/all"};
     self.static.crudOperation.loadBySeason = {id: 1, rest: "load/season"};
     self.static.crudOperation.loadByPeople = {id: 5, rest: "load/people"};
+    self.static.crudOperation.loadByHome = {id: 6, rest: "load/home"};
     self.static.crudOperation.save = {id: 2, rest: "save"};
     self.static.crudOperation.update = {id: 3, rest: "update"};
     self.static.crudOperation.remove = {id: 4, rest: "remove"};
+    self.static.crudOperation.generate = {id: 7, rest: "generate"};
     self.static.operations = [
         self.static.crudOperation.loadAll,
         self.static.crudOperation.loadBySeason,
         self.static.crudOperation.loadByPeople,
+        self.static.crudOperation.loadByHome,
         self.static.crudOperation.save,
         self.static.crudOperation.update,
-        self.static.crudOperation.remove
+        self.static.crudOperation.remove,
+        self.static.crudOperation.generate
     ];
 
     self.getCurrentSeason = function (callback) {
@@ -80,168 +76,30 @@ function Ajax(root) {
         });
 
     };
-
-    self.activity = {};
-
-    self.activity.loadBySeason = function (season, callback) {
-
-        var data = {season: season};
+    
+    self.genericCrud.ajaxSecondary = function (rest, operation, params, callback, arrayObs, followup) {
 
         var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/activity/load/season";
-        header.data = JSON.stringify(data);
+        
+        header.url += "/" + _.clone(rest);
+        
+        self.static.operations.forEach(function(staticOperation){
+            if (staticOperation.id === operation) {
+                header.url += "/" + staticOperation.rest;
+            }
+        });
+        
+        if (typeof params !== "undefined"){
+            header.data = JSON.stringify(params);
+        }
 
         $.ajax(header).done(function (data) {
             if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
+                callback(JSON.parse(data), arrayObs, followup);
             }
         });
 
     };
-
-    self.activity.loadAll = function (callback) {
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/activity/load/all";
-
-        $.ajax(header).done(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-
-    };
-
-    self.activity.save = function (activity, callback) {
-
-        var data = {activity: activity};
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/activity/save";
-        header.data = JSON.stringify(data);
-
-        $.ajax(header).always(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-
-    };
-
-    self.activity.remove = function (activity, callback) {
-
-        var data = {id: activity.id};
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/activity/remove";
-        header.data = JSON.stringify(data);
-
-        $.ajax(header).always(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-
-    };
-
-    self.activity.update = function (id, activity, callback) {
-        var data = {
-            id: id,
-            activity: activity
-        };
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/activity/update";
-        header.data = JSON.stringify(data);
-
-        $.ajax(header).always(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-
-    }
-
-
-    self.insurance = {};
-
-    self.insurance.loadBySeason = function (season, callback) {
-
-        var data = {season: season};
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/insurance/load/season";
-        header.data = JSON.stringify(data);
-
-        $.ajax(header).done(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-
-    };
-
-    self.insurance.loadAll = function (callback) {
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/insurance/load/all";
-
-        $.ajax(header).done(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-
-    };
-
-    self.insurance.save = function (insurance, callback) {
-
-        var data = {insurance: insurance};
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/insurance/save";
-        header.data = JSON.stringify(data);
-
-        $.ajax(header).always(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-
-    };
-
-    self.insurance.remove = function (insurance, callback) {
-
-        var data = {id: insurance.id};
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/insurance/remove";
-        header.data = JSON.stringify(data);
-
-        $.ajax(header).always(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-
-    };
-
-    self.insurance.update = function (id, insurance, callback) {
-        var data = {
-            id: id,
-            insurance: insurance
-        };
-
-        var header = _.cloneDeep(self.static.defaultHeader);
-        header.url += "/insurance/update";
-        header.data = JSON.stringify(data);
-
-        $.ajax(header).always(function (data) {
-            if (typeof callback !== "undefined") {
-                callback(JSON.parse(data));
-            }
-        });
-    }
 
 }
 ;

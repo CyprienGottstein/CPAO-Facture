@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.cpao.facture.server.dao.activity;
+package org.cpao.facture.server.dao.paymentType;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
@@ -16,15 +16,15 @@ import io.vertx.core.json.JsonObject;
  *
  * @author Cyprien
  */
-public class ActivityDaoVerticle extends AbstractVerticle {
+public class PaymentTypeDaoVerticle extends AbstractVerticle {
     
-    protected ActivityDao dao = new ActivityDaoImpl();
+    protected PaymentTypeDao dao = new PaymentTypeDaoImpl();
 
     @Override
     public void start() {
 
         final EventBus bus = vertx.eventBus();
-        bus.consumer("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-save", new Handler<Message<JsonObject>>() {
+        bus.consumer("org.cpao.facture.server.dao.paymenttype.PaymentTypeDaoVerticle-save", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
                 
@@ -37,7 +37,7 @@ public class ActivityDaoVerticle extends AbstractVerticle {
             }
         });
         
-        bus.consumer("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-remove", new Handler<Message<Integer>>() {
+        bus.consumer("org.cpao.facture.server.dao.paymenttype.PaymentTypeDaoVerticle-remove", new Handler<Message<Integer>>() {
             @Override
             public void handle(Message<Integer> message){
                 
@@ -50,7 +50,7 @@ public class ActivityDaoVerticle extends AbstractVerticle {
             }
         });
         
-        bus.consumer("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-update", new Handler<Message<JsonObject>>() {
+        bus.consumer("org.cpao.facture.server.dao.paymenttype.PaymentTypeDaoVerticle-update", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
                 
@@ -64,20 +64,7 @@ public class ActivityDaoVerticle extends AbstractVerticle {
             }
         });
         
-        bus.consumer("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-load-bySeason", new Handler<Message<JsonObject>>() {
-            @Override
-            public void handle(Message<JsonObject> message){
-                
-                final JsonObject data = message.body();
-                final int season = data.getInteger("id");
-                final JsonArray array = dao.loadBySeason(season);
-                
-                message.reply(array);
-                
-            }
-        });
-        
-        bus.consumer("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-load-all", new Handler<Message<JsonObject>>() {
+        bus.consumer("org.cpao.facture.server.dao.paymenttype.PaymentTypeDaoVerticle-load-all", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
                 

@@ -1,4 +1,4 @@
-function InputResourceModal($root, datatypes, seasonController, data) {
+function InputResourceModal($root, datatypes, seasonController, data, primary) {
 
     // Safe pointer on self for model
     var self = this;
@@ -19,8 +19,11 @@ function InputResourceModal($root, datatypes, seasonController, data) {
     self.failure = ko.observable(false);
     self.show = ko.observable(false);
 
-    self.inputResourceController = new InputResourceController(self.root, self);
+    self.inputResourceController = new InputResourceController(self.root, primary);
 
+    self.setInputController = function (controller) {
+        self.inputResourceController = controller;
+    };
 
     self.close = function () {
         self.show(false);
@@ -35,7 +38,7 @@ function InputResourceModal($root, datatypes, seasonController, data) {
         $('#' + self.idModal).on('hidden.bs.modal', function () {
             self.close();
         });
-    }
+    };
 
     self.edit = function (resource, datatype) {
         self.editing(true);
@@ -49,11 +52,16 @@ function InputResourceModal($root, datatypes, seasonController, data) {
         if (typeof datatype !== "undefined") {
             self.inputResourceController.title(datatype.modalLabel);
             self.inputResourceController.datatype(datatype);
+        } else {
+            console.log("DATATYPE UNDEFINED");
         }
 
     };
 
     self.isValid = ko.computed(function () {
+        if (!self.inputResourceController) {
+            return false;
+        }
         return self.inputResourceController.resourceValidator.isValid();
     });
 
@@ -63,39 +71,85 @@ function InputResourceModal($root, datatypes, seasonController, data) {
         var datatype = self.inputResourceController.datatype();
 
         var array = self.inputResourceController.resourceFields();
+
+
+        var composite = null;
+        var compositeId = null;
+
+        array.forEach(function (fieldObs) {
+            if (fieldObs.metadata.type === "composite") {
+                compositeId = fieldObs.metadata.id;
+                composite = {};
+            }
+        });
+
+
         array.forEach(function (fieldObs) {
             switch (fieldObs.metadata.type) {
                 case "id":
                     break;
                 case "datatype":
                     break;
+                case "composite":
+                    break;
                 case "float":
                     resource[fieldObs.metadata.id] = fieldObs.data() + "";
                     break;
                 case "date":
                     var timestamp = new Date(fieldObs.data()).getTime();
-                    resource[fieldObs.metadata.id] = timestamp;
+                    if (fieldObs.metadata.composite) {
+                        composite[fieldObs.metadata.id] = timestamp;
+                    } else {
+                        resource[fieldObs.metadata.id] = timestamp;
+                    }
                     break;
                 case "season":
                     resource[fieldObs.metadata.id] = fieldObs.data.current();
                     break;
                 case "select":
-                    console.log(fieldObs.data());
-                    console.log(fieldObs.metadata.id);
                     resource[fieldObs.metadata.id] = fieldObs.data()[0].id();
                     break;
+                case "short-string":
+                    if (fieldObs.metadata.composite) {
+                        composite[fieldObs.metadata.id] = fieldObs.data();
+                    } else {
+                        resource[fieldObs.metadata.id] = fieldObs.data();
+                    }
+                    break;
                 default:
-                    console.log(fieldObs.metadata.id);
                     resource[fieldObs.metadata.id] = fieldObs.data();
                     break;
             }
         });
 
+        if (composite) {
+            resource[compositeId] = JSON.stringify(composite);
+        }
+
+        if (!self.inputResourceController.primary) {
+            var field = self.inputResourceController.forceField();
+            var id = self.inputResourceController.forceId();
+            var pack = self.inputResourceController.forcePack();
+            resource[field] = id;
+        }
+
         var callback = function (data) {
 
             if (typeof data !== "undefined") {
                 if (data.result === 1) {
-                    datatype.reload();
+                    if (!self.inputResourceController.primary) {
+                        console.log(pack);
+                        if (datatype.loadableByPeople) {
+                            datatype.reload.people(id, pack, function (array) {
+                                pack.resources(array);
+                            });
+                        }
+                        if (datatype.loadableByHome) {
+                            datatype.reload.home(id, pack, function (array) {
+                                pack.resources(array);
+                            });
+                        }
+                    }
                     self.toggle();
                 } else {
                     self.failure(true);

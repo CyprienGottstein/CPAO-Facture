@@ -19,7 +19,7 @@ function ResourceController(root, seasonController, datatypes, inputModal, remov
     self.datatypes = ko.observableArray(datatypes);
     self.rebindAll = function () {
         self.datatypes().forEach(function (datatype) {
-            datatype.resources().forEach(function (resource) {
+            datatype().resources().forEach(function (resource) {
                 resource.rebind();
             });
         });
@@ -27,7 +27,9 @@ function ResourceController(root, seasonController, datatypes, inputModal, remov
 
     self.showSeasonPicker = ko.observable(false);
 
-    self.enhancePrimaryDatatype = function (datatype) {
+    self.enhancePrimaryDatatype = function (datatypePointer) {
+
+        var datatype = datatypePointer();
         datatype.loadAll = function () {
 
             var callback = function (data) {
@@ -88,7 +90,6 @@ function ResourceController(root, seasonController, datatypes, inputModal, remov
                         var resourceObject = new datatype.model(root, self, resource, datatype);
                         resourceObject.toggleEditModal = function () {
                             self.modal.edit(resourceObject, resourceObject.datatype);
-//                            self.modal.toggle(resourceObject.datatype);
                         };
 
                         resourceObject.toggleRemoveModal = function () {
@@ -103,7 +104,7 @@ function ResourceController(root, seasonController, datatypes, inputModal, remov
                 root.ajax.genericCrud.ajax(
                         datatype.rest,
                         root.ajax.static.crudOperation.loadBySeason.id,
-                        {season: _.clone(self.season.yearpicker.current())},
+                        {id: _.clone(self.season.yearpicker.current())},
                 callback
                         );
             };
@@ -126,73 +127,199 @@ function ResourceController(root, seasonController, datatypes, inputModal, remov
 
             datatype.reload();
         }
+
+        datatypePointer(datatype);
     };
 
-    self.enhanceSecondaryDatatype = function (datatype) {
+//    self.enhanceSecondaryDatatype = function (datatypePointer) {
+//
+//        var datatype = datatypePointer();
+//        datatype.enhance = function (inputResourceModal, removeResourceModal) {
+//            datatype.toggleModal = function () {
+//                inputResourceModal.toggle(datatype);
+//            };
+//
+//            if (datatype.loadableByPeople) {
+//                datatype.loadByPeople = function (followup) {
+//
+//                    var callback = function (data) {
+//                        var array = datatype.resources();
+//                        array = [];
+//                        data.forEach(function (resource) {
+//                            var resourceObject = new datatype.model(root, self, resource, datatype);
+//                            resourceObject.toggleEditModal = function () {
+//                                inputResourceModal.edit(resourceObject, resourceObject.datatype);
+//                            };
+//
+//                            resourceObject.toggleRemoveModal = function () {
+//                                removeResourceModal.focus(resourceObject, resourceObject.datatype);
+//                                removeResourceModal.toggle(resourceObject.datatype);
+//                            };
+//                            array.push(resourceObject);
+//                        });
+//                        datatype.resources(array);
+//
+//                        if (typeof followup !== "undefined") {
+//                            followup();
+//                        }
+//                    };
+//
+//                    root.ajax.genericCrud.ajax(
+//                            datatype.rest,
+//                            root.ajax.static.crudOperation.loadByPeople.id,
+//                            datatype.params,
+//                            callback
+//                            );
+//                };
+//
+//                datatype.reloadingFunction = datatype.loadByPeople;
+//            }
+//
+//            if (datatype.loadableByHome) {
+//                datatype.loadByHome = function (followup) {
+//
+//                    var callback = function (data) {
+//                        var array = datatype.resources();
+//                        array = [];
+//                        data.forEach(function (resource) {
+//                            var resourceObject = new datatype.model(root, self, resource, datatype);
+//                            resourceObject.toggleEditModal = function () {
+//                                inputResourceModal.edit(resourceObject, resourceObject.datatype);
+//                            };
+//
+//                            resourceObject.toggleRemoveModal = function () {
+//                                removeResourceModal.focus(resourceObject, resourceObject.datatype);
+//                                removeResourceModal.toggle(resourceObject.datatype);
+//                            };
+//                            array.push(resourceObject);
+//                        });
+//                        datatype.resources(array);
+//
+//                        if (typeof followup !== "undefined") {
+//                            followup();
+//                        }
+//                    };
+//
+//                    root.ajax.genericCrud.ajax(
+//                            datatype.rest,
+//                            root.ajax.static.crudOperation.loadByHome.id,
+//                            datatype.params,
+//                            callback
+//                            );
+//                };
+//
+//                datatype.reloadingFunction = datatype.loadByHome;
+//            }
+//        };
+//
+//        datatype.toggleModal = function () {
+//
+//        };
+//
+//        datatype.setId = function (id) {
+//            datatype.params = {};
+//            datatype.params.id = id;
+//        };
+//
+//        datatype.reloadingFunction = function () {
+//            console.log("CALLED BUT USELESS");
+//        };
+//
+//        datatype.reload = function (followup) {
+//            if (typeof followup !== "undefined") {
+//                datatype.reloadingFunction(followup);
+//            }
+//            datatype.reloadingFunction();
+//        };
+//
+//        datatypePointer(datatype);
+//
+//    };
 
-        datatype.enhance = function (inputResourceModal, removeResourceModal) {
-            datatype.toggleModal = function () {
-                inputResourceModal.toggle(datatype);
-            };
-            
-            datatype.setId = function(id) {
-                datatype.params = {};
-                datatype.params.people = id;
-            };
+    self.enhanceSecondaryDatatype = function (datatypePointer) {
 
-            if (datatype.loadableByPeople) {
-                datatype.loadByPeople = function () {
+        var datatype = datatypePointer();
 
-                    var callback = function (data) {
-                        var array = datatype.resources();
-                        array = [];
-                        data.forEach(function (resource) {
-                            var resourceObject = new datatype.model(root, self, resource, datatype);
-                            resourceObject.toggleEditModal = function () {
-                                inputResourceModal.edit(resourceObject, resourceObject.datatype);
-                            };
-
-                            resourceObject.toggleRemoveModal = function () {
-                                removeResourceModal.focus(resourceObject, resourceObject.datatype);
-                                removeResourceModal.toggle(resourceObject.datatype);
-                            };
-                            array.push(resourceObject);
-                        });
-                        datatype.resources(array);
-                    };
-
-//                    var params = {};
-//                    params.people = people.id();
-
-                    root.ajax.genericCrud.ajax(
-                            datatype.rest,
-                            root.ajax.static.crudOperation.loadByPeople.id,
-                            datatype.params,
-                            callback
-                            );
-                };
-
-                datatype.reloadingFunction = datatype.loadByPeople;
-            }
+        datatype.modal = {};
+        datatype.setInputModal = function (modal) {
+            datatype.modal.inputModal = modal;
+        };
+        datatype.setRemoveModal = function (modal) {
+            datatype.modal.removeModal = modal;
         };
 
         datatype.toggleModal = function () {
-
+            if (datatype.modal.inputModal) {
+                datatype.modal.inputModal.toggle(datatype);
+            }
         };
 
-        datatype.reloadingFunction = function () {
+        datatype.callback = function (data, arrayObs, followup) {
+            var array = arrayObs();
+            array = [];
+            data.forEach(function (resource) {
+                var resourceObject = new datatype.model(root, self, resource, datatype);
+                resourceObject.toggleEditModal = function () {
+                    if (datatype.modal.inputModal) {
+                        datatype.modal.inputModal.edit(resourceObject, resourceObject.datatype);
+                    }
+                };
 
+                resourceObject.toggleRemoveModal = function () {
+                    if (datatype.modal.removeModal) {
+                        datatype.modal.removeModal.focus(resourceObject, resourceObject.datatype);
+                        datatype.modal.removeModal.toggle(resourceObject.datatype);
+                    }
+                };
+                array.push(resourceObject);
+            });
+            arrayObs(array);
+
+            if (typeof followup !== "undefined") {
+                followup();
+            }
+        };
+        
+        if (datatype.loadableByPeople) {
+            datatype.loadByPeople = function (arrayObs, followup) {
+
+                root.ajax.genericCrud.ajaxSecondary(
+                        datatype.rest,
+                        root.ajax.static.crudOperation.loadByPeople.id,
+                        datatype.params,
+                        callback,
+                        arrayObs,
+                        followup
+                        );
+            };
+        }
+
+        if (datatype.loadableByHome) {
+            datatype.loadByHome = function (arrayObs, followup) {
+
+                root.ajax.genericCrud.ajaxSecondary(
+                        datatype.rest,
+                        root.ajax.static.crudOperation.loadByHome.id,
+                        datatype.params,
+                        callback,
+                        arrayObs,
+                        followup
+                        );
+            };
+        }
+
+        datatype.setId = function (id) {
+            datatype.params = {};
+            datatype.params.id = id;
         };
 
-        datatype.reload = function () {
-            datatype.reloadingFunction();
-        };
+        datatypePointer(datatype);
 
     };
 
     self.datatypes().forEach(function (datatype) {
 
-        if (datatype.primary) {
+        if (datatype().primary) {
             self.enhancePrimaryDatatype(datatype);
         } else {
             self.enhanceSecondaryDatatype(datatype);

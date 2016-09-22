@@ -54,6 +54,7 @@ public class RestVerticle extends AbstractVerticle {
         dynamicRouter.route("/insurance/update").handler(handler::insuranceUpdate);
         
         dynamicRouter.route("/people/load/all").handler(handler::peopleLoadAll);
+        dynamicRouter.route("/people/load/home").handler(handler::peopleLoadByHome);
         dynamicRouter.route("/people/save").handler(handler::peopleSave);
         dynamicRouter.route("/people/remove").handler(handler::peopleRemove);
         dynamicRouter.route("/people/update").handler(handler::peopleUpdate);
@@ -67,6 +68,19 @@ public class RestVerticle extends AbstractVerticle {
         dynamicRouter.route("/peopleActivity/save").handler(handler::peopleActivitySave);
         dynamicRouter.route("/peopleActivity/remove").handler(handler::peopleActivityRemove);
         dynamicRouter.route("/peopleActivity/update").handler(handler::peopleActivityUpdate);
+        
+        dynamicRouter.route("/payment/load/all").handler(handler::paymentLoadAll);
+        dynamicRouter.route("/payment/load/home").handler(handler::paymentLoadByHome);
+        dynamicRouter.route("/payment/save").handler(handler::paymentSave);
+        dynamicRouter.route("/payment/remove").handler(handler::paymentRemove);
+        dynamicRouter.route("/payment/update").handler(handler::paymentUpdate);
+        
+        dynamicRouter.route("/paymentType/load/all").handler(handler::paymentTypeLoadAll);
+        dynamicRouter.route("/paymentType/save").handler(handler::paymentTypeSave);
+        dynamicRouter.route("/paymentType/remove").handler(handler::paymentTypeRemove);
+        dynamicRouter.route("/paymentType/update").handler(handler::paymentTypeUpdate);
+        
+        dynamicRouter.route("/bill/generate").handler(handler::billGenerate);
         
         restServer.requestHandler(dynamicRouter::accept).listen(10000);
         

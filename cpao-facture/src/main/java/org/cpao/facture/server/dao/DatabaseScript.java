@@ -84,14 +84,18 @@ public class DatabaseScript {
                     + "        CREATE TABLE HOME_PERSON(ID_HOME INTEGER, ID_PERSON INTEGER)\n"
                     + "        CREATE TABLE INSURANCE(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), INSURANCE_COST DOUBLE, SEASON INTEGER)\n"
                     + "        CREATE TABLE ACTIVITY_PERSON(ID INTEGER IDENTITY PRIMARY KEY, ID_ACTIVITY INTEGER, ID_PERSON INTEGER, ID_INSURANCE INTEGER, TEACHER BOOLEAN, OBSERVATOR BOOLEAN, FAMILY BOOLEAN, SEASON INTEGER"
-                    + "        , CONSTRAINT SAME_PERSON_EVERYWHERE FOREIGN KEY (ID_ACTIVITY) REFERENCES CPAO.ACTIVITY (ID) ON DELETE CASCADE ON UPDATE CASCADE"
-                    + "        , CONSTRAINT SAME_PERSON_EVERYWHERE FOREIGN KEY (ID_INSURANCE) REFERENCES CPAO.INSURANCE (ID) ON DELETE CASCADE ON UPDATE CASCADE"
+                    + "        , CONSTRAINT SAME_ACTIVITY_EVERYWHERE FOREIGN KEY (ID_ACTIVITY) REFERENCES CPAO.ACTIVITY (ID) ON DELETE CASCADE ON UPDATE CASCADE"
+                    + "        , CONSTRAINT SAME_INSURANCE_EVERYWHERE FOREIGN KEY (ID_INSURANCE) REFERENCES CPAO.INSURANCE (ID) ON DELETE CASCADE ON UPDATE CASCADE"
                     + "        , CONSTRAINT SAME_PERSON_EVERYWHERE FOREIGN KEY (ID_PERSON) REFERENCES CPAO.PERSON (ID) ON DELETE CASCADE ON UPDATE CASCADE)"
+                    + "        CREATE TABLE PAYMENT(ID INTEGER PRIMARY KEY, ID_HOME INTEGER, SEASON INTEGER, ID_TYPE INTEGER, AMOUNT DOUBLE, METADATA VARCHAR(1000), SOLDED BOOLEAN)\n"
+                    + "        CREATE TABLE PAYMENT_TYPE(ID INTEGER PRIMARY KEY, NAME VARCHAR(100))\n"
                     + "        CREATE SEQUENCE SEQ_ACTIVITY AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        CREATE SEQUENCE SEQ_INSURANCE AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        CREATE SEQUENCE SEQ_PERSON AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        CREATE SEQUENCE SEQ_HOME AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        CREATE SEQUENCE SEQ_ACTIVITY_PERSON AS INTEGER START WITH 0 INCREMENT BY 1\n"
+                    + "        CREATE SEQUENCE SEQ_PAYMENT AS INTEGER START WITH 0 INCREMENT BY 1\n"
+                    + "        CREATE SEQUENCE SEQ_PAYMENT_TYPE AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        GRANT ALL ON ACTIVITY TO \"root\"\n"
                     + "        GRANT ALL ON PERSON TO \"root\"\n"
                     + "        GRANT ALL ON HOME TO \"root\"\n"
@@ -156,6 +160,39 @@ public class DatabaseScript {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void addPaymentTypeBatch() {
+        
+        final JsonArray paymentTypes = new JsonArray();
+        paymentTypes.add("Chèque bancaire");
+        paymentTypes.add("Chèque vacance");
+        paymentTypes.add("Coupon sport");
+        paymentTypes.add("Cart@too");
+        paymentTypes.add("Espèce");
+
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+
+            final StringBuilder query = new StringBuilder();
+
+            for (int i = 0; i < paymentTypes.size(); i++) {
+                final String paymentType = paymentTypes.getString(i);
+                query
+                        .append("INSERT INTO CPAO.PAYMENT_TYPE (ID, NAME) VALUES (")
+                        .append("NEXT VALUE FOR CPAO.SEQ_PAYMENT_TYPE, ")
+                        .append("'")
+                        .append(paymentType)
+                        .append("' );");
+            }
+
+            final int result = s.executeUpdate(query.toString());
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public void retrieveHomeBatch() {

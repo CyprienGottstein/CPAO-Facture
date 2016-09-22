@@ -7,12 +7,21 @@ package org.cpao.facture.server.model;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import java.util.Map;
 
 /**
  *
  * @author Cyprien
  */
 public class People extends JsonObject {
+    
+    public People() {
+        
+    };
+    
+    public People(Map<String, Object> map){
+        super(map);
+    }
     
     public void setId(final int id){
         put("id", id);
@@ -39,10 +48,10 @@ public class People extends JsonObject {
         return getLong("birthday", Long.MIN_VALUE);
     }
     public void setHome(final int home) {
-        put("home", home);
+        put("idHome", home);
     }
     public int getHome(){
-        return getInteger("home", Integer.MIN_VALUE);
+        return getInteger("idHome", Integer.MIN_VALUE);
     }
     public void addActivities(final JsonObject activity) {
         getJsonArray("activites", new JsonArray()).add(activity);

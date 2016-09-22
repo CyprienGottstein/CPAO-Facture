@@ -24,7 +24,15 @@ function GenericResource(root) {
     self.static.msg.failure.end = "</label> a echoué";
 
     self.datatype = {};
-    self.datatype.activity = {
+    
+    self.datatype.activity = ko.observable({});
+    self.datatype.insurance = ko.observable({});
+    self.datatype.home = ko.observable({});
+    self.datatype.peopleActivity = ko.observable({});
+    self.datatype.people = ko.observable({});
+    self.datatype.payment = ko.observable({});
+    
+    self.datatype.activity({
         id: 0,
         primary: true,
         rest: "activity",
@@ -35,49 +43,54 @@ function GenericResource(root) {
         modalLabel: "Saisie d'une activité",
         loadableBySeason: true,
         msg: self.static.msg
-    };
-    self.datatype.activity.field = {
+    });
+    self.datatype.activity().field = {
         id: {
             id: "id",
             label: "Id",
             type: "id",
-            input: false
+            input: false,
+            show: true
         },
         season: {
             id: "season",
             label: "Saison",
             type: "season",
-            input: true
+            input: true,
+            show: true
         },
         label: {
             id: "label",
             label: "Description",
             type: "long-string",
-            input: true
+            input: true,
+            show: true
         },
         licenceCost: {
             id: "licenceCost",
             label: "Licence",
             type: "float",
-            input: true
+            input: true,
+            show: true
         },
         cotisationCost: {
             id: "cotisationCost",
             label: "Cotisation",
             type: "float",
-            input: true
+            input: true,
+            show: true
         }
     };
 
-    self.datatype.activity.fields = [
-        self.datatype.activity.field.id,
-        self.datatype.activity.field.season,
-        self.datatype.activity.field.label,
-        self.datatype.activity.field.licenceCost,
-        self.datatype.activity.field.cotisationCost
+    self.datatype.activity().fields = [
+        self.datatype.activity().field.id,
+        self.datatype.activity().field.season,
+        self.datatype.activity().field.label,
+        self.datatype.activity().field.licenceCost,
+        self.datatype.activity().field.cotisationCost
     ];
 
-    self.datatype.activity.model = function ($root, $parent, data, datatype) {
+    self.datatype.activity().model = function ($root, $parent, data, datatype) {
         // Safe pointer on self for model
         var self = this;
         // Safe pointer on the root of the application to access other controlers
@@ -111,11 +124,8 @@ function GenericResource(root) {
 
     };
 
-    self.datatype.activity.resources = ko.observableArray();
 
-
-
-    self.datatype.insurance = {
+    self.datatype.insurance({
         id: 1,
         primary: true,
         rest: "insurance",
@@ -126,43 +136,47 @@ function GenericResource(root) {
         modalLabel: "Saisie d'un mode d'assurance",
         loadableBySeason: true,
         msg: self.static.msg
-    };
+    });
 
-    self.datatype.insurance.field = {
+    self.datatype.insurance().field = {
         id: {
             id: "id",
             label: "Id",
             type: "id",
-            input: false
+            input: false,
+            show: true
         },
         season: {
             id: "season",
             label: "Saison",
             type: "season",
-            input: true
+            input: true,
+            show: true
         },
         label: {
             id: "label",
             label: "Description",
             type: "long-string",
-            input: true
+            input: true,
+            show: true
         },
         insuranceCost: {
             id: "insuranceCost",
             label: "Assurance",
             type: "float",
-            input: true
+            input: true,
+            show: true
         }
     };
 
-    self.datatype.insurance.fields = [
-        self.datatype.insurance.field.id,
-        self.datatype.insurance.field.season,
-        self.datatype.insurance.field.label,
-        self.datatype.insurance.field.insuranceCost
+    self.datatype.insurance().fields = [
+        self.datatype.insurance().field.id,
+        self.datatype.insurance().field.season,
+        self.datatype.insurance().field.label,
+        self.datatype.insurance().field.insuranceCost
     ];
 
-    self.datatype.insurance.model = function ($root, $parent, data, datatype) {
+    self.datatype.insurance().model = function ($root, $parent, data, datatype) {
         // Safe pointer on self for model
         var self = this;
         // Safe pointer on the root of the application to access other controlers
@@ -191,12 +205,11 @@ function GenericResource(root) {
         };
 
     };
-    self.datatype.insurance.resources = ko.observableArray();
 
 
 
 
-    self.datatype.home = {
+    self.datatype.home({
         id: 2,
         primary: true,
         rest: "home",
@@ -207,28 +220,53 @@ function GenericResource(root) {
         modalLabel: "Saisie d'un foyer",
         loadableBySeason: false,
         msg: self.static.msg
-    };
-    self.datatype.home.field = {
+    });
+    self.datatype.home().field = {
         id: {
             id: "id",
             label: "Id",
             type: "id",
-            input: false
+            input: false,
+            show: true
         },
         name: {
             id: "name",
             label: "Nom",
             type: "long-string",
-            input: true
+            input: true,
+            show: true
+        },
+        peoples: {
+            id: "peoples",
+            label: "Adhérents",
+            type: "recursive",
+            pointerToDatatype: self.datatype.people,
+            input: false,
+            show: false,
+            restrictBy: "idHome",
+            reloadBy: "home"
+        },
+        payments: {
+            id: "payments",
+            label: "Paiements",
+            type: "datatype",
+            pointerToDatatype: self.datatype.payment,
+            list: true,
+            input: true,
+            show: false,
+            restrictBy: "idHome",
+            reloadBy: "home"
         }
     };
 
-    self.datatype.home.fields = [
-        self.datatype.home.field.id,
-        self.datatype.home.field.name
+    self.datatype.home().fields = [
+        self.datatype.home().field.id,
+        self.datatype.home().field.name,
+        self.datatype.home().field.peoples,
+        self.datatype.home().field.payments
     ];
 
-    self.datatype.home.model = function ($root, $parent, data, datatype) {
+    self.datatype.home().model = function ($root, $parent, data, datatype) {
         // Safe pointer on self for model
         var self = this;
         // Safe pointer on the root of the application to access other controlers
@@ -239,6 +277,8 @@ function GenericResource(root) {
         self.name = ko.observable(data.name)
                 .extend({required: {params: true, message: "Ce champ est obligatoire"}})
                 .extend({minLength: {params: 2, message: "Le prénom ne peut pas faire moins de deux caractères."}});
+        
+//        self.idPeople = ko.observable(new ResourceBinder(self.root, self, data.idPeople, datatype, datatype.field.idPeople.subtype));
 
         self.msg = datatype.msg;
         self.datatype = datatype;
@@ -253,13 +293,11 @@ function GenericResource(root) {
 
     };
 
-    self.datatype.home.resources = ko.observableArray();
 
 
 
 
-
-    self.datatype.peopleActivity = {
+    self.datatype.peopleActivity({
         id: 4,
         primary: false,
         rest: "peopleActivity",
@@ -270,78 +308,82 @@ function GenericResource(root) {
         modalLabel: "Saisie d'une activité pour un adhérent",
         loadableBySeason: false,
         loadableByPeople: true,
-        showInput : ko.observable(false),
         msg: self.static.msg
-    };
-    self.datatype.peopleActivity.buttons = {
-        add: true
-    };
-    self.datatype.peopleActivity.field = {
+    });
+    self.datatype.peopleActivity().field = {
         id: {
             id: "id",
             label: "Id",
             type: "id",
-            input: false
+            input: false,
+            show: true
         },
         idPeople: {
             id: "idPeople",
             label: "Adhérent",
             type: "select",
             subtype: {id: 3, field: "lastname"},
-            input: false
+            input: false,
+            show: true
         },
         idActivity: {
             id: "idActivity",
             label: "Activité",
             type: "select",
             subtype: {id: 0, field: "label"},
-            input: true
+            input: true,
+            show: true
         },
         idInsurance: {
             id: "idInsurance",
             label: "Assurance",
             type: "select",
             subtype: {id: 1, field: "label"},
-            input: true
+            input: true,
+            show: true
         },
         family: {
             id: "family",
             label: "Famille",
             type: "boolean",
-            input: true
+            input: true,
+            show: true
         },
         teacher: {
             id: "teacher",
             label: "Encadrant",
             type: "boolean",
-            input: true
+            input: true,
+            show: true
         },
         observator: {
             id: "observator",
             label: "Non-Pratiquant",
             type: "boolean",
-            input: true
+            input: true,
+            show: true
         },
         season: {
             id: "season",
             label: "saison",
             type: "season",
-            input: true
+            input: true,
+            show: true
         }
     };
 
-    self.datatype.peopleActivity.fields = [
-        self.datatype.peopleActivity.field.id,
-        self.datatype.peopleActivity.field.idPeople,
-        self.datatype.peopleActivity.field.idActivity,
-        self.datatype.peopleActivity.field.idInsurance,
-        self.datatype.peopleActivity.field.family,
-        self.datatype.peopleActivity.field.observator,
-        self.datatype.peopleActivity.field.teacher,
-        self.datatype.peopleActivity.field.season
+    self.datatype.peopleActivity().fields = [
+        self.datatype.peopleActivity().field.id,
+        self.datatype.peopleActivity().field.idPeople,
+        self.datatype.peopleActivity().field.idActivity,
+        self.datatype.peopleActivity().field.idInsurance,
+        self.datatype.peopleActivity().field.family,
+        self.datatype.peopleActivity().field.observator,
+        self.datatype.peopleActivity().field.teacher,
+        self.datatype.peopleActivity().field.season
     ];
 
-    self.datatype.peopleActivity.model = function ($root, $parent, data, datatype) {
+    self.datatype.peopleActivity().model = function ($root, $parent, data, datatype) {
         // Safe pointer on self for model
         var self = this;
         // Safe pointer on the root of the application to access other controlers
@@ -372,14 +414,31 @@ function GenericResource(root) {
         self.getLabel = function () {
             return self.msg.announce.start + " l'activité <label>" + self.idActivity().label() + "</label> de l'adhérent " + self.msg.announce.middle + self.idPeople().label() + " " + self.msg.announce.end;
         };
+        
+        self.getDescription = function () {
+            var str = "";
+            str += self.idActivity().label();
+            str += " - "
+            str += self.idInsurance().label();
+            
+            if (self.family()){
+                str += " [ Famille ]";
+            }
+            if (self.teacher()){
+                str += " [ Encadrant ]";
+            }
+            if (self.observator()){
+                str += " [ Non-Pratiquant ]";
+            }
+            
+            return str;
+        };
 
     };
 
-    self.datatype.peopleActivity.resources = ko.observableArray();
 
 
-
-    self.datatype.people = {
+    self.datatype.people({
         id: 3,
         primary: true,
         rest: "people",
@@ -389,46 +448,51 @@ function GenericResource(root) {
         tabLabel: "Gestion des Adhérents",
         modalLabel: "Saisie d'un adhérent",
         loadableBySeason: false,
-        showInput : ko.observable(true),
         msg: self.static.msg
-    };
-    self.datatype.people.field = {
+    });
+    self.datatype.people().field = {
         id: {
             id: "id",
             label: "Id",
             type: "id",
-            input: false
+            input: false,
+            show: true
         },
         firstname: {
             id: "firstname",
             label: "Prénom",
             type: "short-string",
-            input: true
+            input: true,
+            show: true
         },
         lastname: {
             id: "lastname",
             label: "Nom",
             type: "short-string",
-            input: true
+            input: true,
+            show: true
         },
         birthday: {
             id: "birthday",
             label: "Date de naissance",
             type: "date",
-            input: true
+            input: true,
+            show: true
         },
         age: {
             id: "age",
             label: "Age",
             type: "id",
-            input: false
+            input: false,
+            show: true
         },
-        home: {
-            id: "home",
+        idHome: {
+            id: "idHome",
             label: "Foyer",
             type: "select",
             subtype: {id: 2, field: "name"},
-            input: true
+            input: true,
+            show: true
         },
         activities: {
             id: "activities",
@@ -436,21 +500,24 @@ function GenericResource(root) {
             type: "datatype",
             pointerToDatatype: self.datatype.peopleActivity,
             list: true,
-            input: true
+            input: true,
+            show: false,
+            restrictBy: "idPeople",
+            reloadBy: "people"
         }
     };
 
-    self.datatype.people.fields = [
-        self.datatype.people.field.id,
-        self.datatype.people.field.firstname,
-        self.datatype.people.field.lastname,
-        self.datatype.people.field.birthday,
-        self.datatype.people.field.age,
-        self.datatype.people.field.home,
-        self.datatype.people.field.activities
+    self.datatype.people().fields = [
+        self.datatype.people().field.id,
+        self.datatype.people().field.firstname,
+        self.datatype.people().field.lastname,
+        self.datatype.people().field.birthday,
+        self.datatype.people().field.age,
+        self.datatype.people().field.idHome,
+        self.datatype.people().field.activities
     ];
 
-    self.datatype.people.model = function ($root, $parent, data, datatype) {
+    self.datatype.people().model = function ($root, $parent, data, datatype) {
         // Safe pointer on self for model
         var self = this;
         // Safe pointer on the root of the application to access other controlers
@@ -480,26 +547,178 @@ function GenericResource(root) {
         var age = Math.floor(new Date(diff).getTime() / (1000 * 60 * 60 * 24 * 365.25));
 
         self.age = ko.observable(age);
-        self.home = ko.observable(new ResourceBinder(self.root, self, data.home, datatype, datatype.field.home.subtype));
+        self.idHome = ko.observable(new ResourceBinder(self.root, self, data.idHome, datatype, datatype.field.idHome.subtype));
 
         self.rebind = function () {
-            self.home().rebind();
+            self.idHome().rebind();
         };
 
         self.getLabel = function () {
             return self.msg.announce.start + " l'adhérent " + self.msg.announce.middle + self.firstname() + " " + self.lastname() + self.msg.announce.end;
         };
+        
+        self.getDescription = function () {
+            var str = "";
+            str += self.firstname();
+            str += " - ";
+            str += self.lastname();
+            str += " - ";
+            str += self.age();
+            str += " ans";
+            
+            return str;
+        };
 
     };
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    self.datatype.payment({
+        id: 5,
+        primary: false,
+        rest: "payment",
+        label: "Paiements",
+        tab: "#paymentSubTab",
+        tabId: "paymentSubTab",
+        tabLabel: "Gestion des Paiements",
+        modalLabel: "Saisie d'un paiements",
+        loadableBySeason: false,
+        loadableByHome: true,
+        msg: self.static.msg
+    });
+    self.datatype.payment().field = {
+        id: {
+            id: "id",
+            label: "Id",
+            type: "id",
+            input: false,
+            show: true
+        },
+        amount: {
+            id: "amount",
+            label: "Montant",
+            type: "float",
+            input: true,
+            show: true
+        },
+        idHome: {
+            id: "idHome",
+            label: "Foyer",
+            type: "select",
+            subtype: {id: 2, field: "name"},
+            input: false,
+            show: true
+        },
+        season: {
+            id: "season",
+            label: "Saison",
+            type: "season",
+            input: true,
+            show: true
+        },
+        bankLabel: {
+            id: "bankLabel",
+            label: "Banque",
+            type: "short-string",
+            input: true,
+            show: true
+        },
+        solded: {
+            id: "solded",
+            label: "Soldé",
+            type: "boolean",
+            input: true,
+            show: true
+        },
+        cashed: {
+            id: "cashed",
+            label: "Encaissé",
+            type: "boolean",
+            input: true,
+            show: true
+        }
+    };
 
-    self.datatype.people.resources = ko.observableArray();
+    self.datatype.payment().fields = [
+        self.datatype.payment().field.id,
+        self.datatype.payment().field.idHome,
+        self.datatype.payment().field.amount,
+        self.datatype.payment().field.season,
+        self.datatype.payment().field.bankLabel,
+        self.datatype.payment().field.solded,
+        self.datatype.payment().field.cashed
+    ];
 
+    self.datatype.payment().model = function ($root, $parent, data, datatype) {
+        // Safe pointer on self for model
+        var self = this;
+        // Safe pointer on the root of the application to access other controlers
+        self.root = $root;
+        self.parent = $parent;
+
+        self.msg = datatype.msg;
+        self.datatype = datatype;
+        self.datatypeId = datatype.id;
+
+        self.id = ko.observable(data.id);
+        self.idHome = ko.observable(new ResourceBinder(self.root, self, data.idHome, datatype, datatype.field.idHome.subtype));
+        self.amount = ko.observable(data.amount);
+        self.season = ko.observable(data.season);
+        self.bankLabel = ko.observable(data.bankLabel);
+        self.solded = ko.observable(data.solded);
+        self.cashed = ko.observable(data.cashed);
+
+        
+
+        self.rebind = function () {
+            self.idHome().rebind();
+        };
+        
+        self.rebind();
+
+        self.getLabel = function () {
+            return self.msg.announce.start + " le paiement numéro " + self.msg.announce.middle + self.id() + " d'un montant de : <label>" + self.amount()
+                    + "</label> addressé par le foyer " + self.idHome().label() + self.msg.announce.end;
+        };
+        
+        self.getDescription = function () {
+            var str = "";
+            str += self.idHome().label();
+            str += " - ";
+            str += self.bankLabel();
+            str += " - ";
+            str += self.amount();
+            str += " ans";
+            
+            return str;
+        };
+
+    };
+    
+    self.datatype.payment().getDatapack = function () {
+        var datapack = {};
+        datapack.resources = ko.observableArray();
+        datapack.fields = self.datatype.payment().fields;
+        return datapack;
+    };
+    
     self.datatypes = ko.observableArray([
         self.datatype.activity,
         self.datatype.insurance,
         self.datatype.people,
         self.datatype.peopleActivity,
-        self.datatype.home
+        self.datatype.home,
+        self.datatype.payment
     ]);
 
 }
