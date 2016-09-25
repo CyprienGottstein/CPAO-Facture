@@ -78,17 +78,18 @@ public class DatabaseScript {
             Statement s = c.createStatement();
 
             final int i = s.executeUpdate("CREATE SCHEMA CPAO AUTHORIZATION \"root\"\n"
-                    + "        CREATE TABLE ACTIVITY(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), LICENCE_COST DOUBLE, COTISATION_COST DOUBLE, SEASON INTEGER)\n"
-                    + "        CREATE TABLE PERSON(ID INTEGER IDENTITY PRIMARY KEY, FIRSTNAME VARCHAR(100), LASTNAME VARCHAR(100), BIRTHDAY BIGINT)\n"
+                    + "        CREATE TABLE ACTIVITY(ID INTEGER IDENTITY PRIMARY KEY, LABEL VARCHAR(300), LICENCE_COST DOUBLE, COTISATION_COST DOUBLE, SEASON INTEGER)\n"
                     + "        CREATE TABLE HOME(ID INTEGER IDENTITY PRIMARY KEY, NAME VARCHAR(100))\n"
-                    + "        CREATE TABLE HOME_PERSON(ID_HOME INTEGER, ID_PERSON INTEGER)\n"
-                    + "        CREATE TABLE INSURANCE(ID INTEGER PRIMARY KEY, LABEL VARCHAR(300), INSURANCE_COST DOUBLE, SEASON INTEGER)\n"
+                    + "        CREATE TABLE PERSON(ID INTEGER IDENTITY PRIMARY KEY, ID_HOME INTEGER, FIRSTNAME VARCHAR(100), LASTNAME VARCHAR(100), BIRTHDAY BIGINT"
+                    + "        , CONSTRAINT HOME_PERSON FOREIGN KEY (ID_HOME) REFERENCES CPAO.HOME (ID) ON DELETE CASCADE ON UPDATE CASCADE)"
+                    + "        CREATE TABLE INSURANCE(ID INTEGER IDENTITY PRIMARY KEY, LABEL VARCHAR(300), INSURANCE_COST DOUBLE, SEASON INTEGER)\n"
                     + "        CREATE TABLE ACTIVITY_PERSON(ID INTEGER IDENTITY PRIMARY KEY, ID_ACTIVITY INTEGER, ID_PERSON INTEGER, ID_INSURANCE INTEGER, TEACHER BOOLEAN, OBSERVATOR BOOLEAN, FAMILY BOOLEAN, SEASON INTEGER"
                     + "        , CONSTRAINT SAME_ACTIVITY_EVERYWHERE FOREIGN KEY (ID_ACTIVITY) REFERENCES CPAO.ACTIVITY (ID) ON DELETE CASCADE ON UPDATE CASCADE"
                     + "        , CONSTRAINT SAME_INSURANCE_EVERYWHERE FOREIGN KEY (ID_INSURANCE) REFERENCES CPAO.INSURANCE (ID) ON DELETE CASCADE ON UPDATE CASCADE"
                     + "        , CONSTRAINT SAME_PERSON_EVERYWHERE FOREIGN KEY (ID_PERSON) REFERENCES CPAO.PERSON (ID) ON DELETE CASCADE ON UPDATE CASCADE)"
-                    + "        CREATE TABLE PAYMENT(ID INTEGER PRIMARY KEY, ID_HOME INTEGER, SEASON INTEGER, ID_TYPE INTEGER, AMOUNT DOUBLE, METADATA VARCHAR(1000), SOLDED BOOLEAN)\n"
-                    + "        CREATE TABLE PAYMENT_TYPE(ID INTEGER PRIMARY KEY, NAME VARCHAR(100))\n"
+                    + "        CREATE TABLE PAYMENT(ID INTEGER IDENTITY PRIMARY KEY, ID_HOME INTEGER, SEASON INTEGER, ID_TYPE INTEGER, AMOUNT DOUBLE, METADATA VARCHAR(1000), SOLDED BOOLEAN"
+                    + "        , CONSTRAINT HOME_PAYMENT FOREIGN KEY (ID_HOME) REFERENCES CPAO.HOME (ID) ON DELETE CASCADE ON UPDATE CASCADE)\n"
+                    + "        CREATE TABLE PAYMENT_TYPE(ID INTEGER IDENTITY PRIMARY KEY, NAME VARCHAR(100))\n"
                     + "        CREATE SEQUENCE SEQ_ACTIVITY AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        CREATE SEQUENCE SEQ_INSURANCE AS INTEGER START WITH 0 INCREMENT BY 1\n"
                     + "        CREATE SEQUENCE SEQ_PERSON AS INTEGER START WITH 0 INCREMENT BY 1\n"
@@ -100,7 +101,8 @@ public class DatabaseScript {
                     + "        GRANT ALL ON PERSON TO \"root\"\n"
                     + "        GRANT ALL ON HOME TO \"root\"\n"
                     + "        GRANT ALL ON INSURANCE TO \"root\"\n"
-                    + "        GRANT ALL ON HOME_PERSON TO \"root\"\n"
+                    + "        GRANT ALL ON PAYMENT TO \"root\"\n"
+                    + "        GRANT ALL ON PAYMENT_TYPE TO \"root\"\n"
                     + "        GRANT ALL ON ACTIVITY_PERSON TO \"root\"\n");
 
         } catch (SQLException ex) {
@@ -290,7 +292,7 @@ public class DatabaseScript {
                                     while (n < array.size() && flag) {
                                         final JsonObject home = array.getJsonObject(n);
                                         if (home.getString("name").equals(people.getString("lastname"))) {
-                                            people.put("home", home.getInteger("id"));
+                                            people.put("idHome", home.getInteger("id"));
                                             flag = true;
                                         }
                                         n++;

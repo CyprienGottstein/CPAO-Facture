@@ -27,15 +27,11 @@ public class PeopleDaoVerticle extends AbstractVerticle {
         bus.consumer("org.cpao.facture.server.dao.people.PeopleDaoVerticle-save", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
-                System.out.println("proc");
+                
                 final JsonObject people = message.body();
-                System.out.println(people.encodePrettily());
-                final int result = dao.save(people);
+                final JsonObject result = dao.save(people);
                 
-                final JsonObject reply = new JsonObject();
-                reply.put("result", result);
-                
-                message.reply(reply);
+                message.reply(result);
                 
             }
         });
@@ -87,6 +83,19 @@ public class PeopleDaoVerticle extends AbstractVerticle {
                 final JsonArray array = dao.loadByHome(season);
                 
                 message.reply(array);
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.dao.people.PeopleDaoVerticle-load-single", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message){
+                
+                final JsonObject data = message.body();
+                final int id = data.getInteger("id");
+                final JsonObject o = dao.loadSingle(id);
+                
+                message.reply(o);
                 
             }
         });

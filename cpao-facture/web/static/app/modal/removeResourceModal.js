@@ -43,6 +43,17 @@ function RemoveResourceModal($root, datatypes, idModal) {
     self.remove = function () {
         
 //        var datatype = self.inputResourceController.datatype();
+        var params = {id: self.resource.id()};
+        
+        if (self.datatype.id === 4) { // PeopleActivity
+            params.idPeople = self.resource.idPeople().id();
+        }
+        
+        if (self.datatype.id === 5) { // PeopleActivity
+            params.idHome = self.resource.idHome().id();
+        }
+        
+        console.log(params);
         
         var callback = function (data) {
 
@@ -67,11 +78,11 @@ function RemoveResourceModal($root, datatypes, idModal) {
             if(self.subscriber()){
                 self.subscriber().reload();
             }
+            
+            self.datatype.flow.trigger(self.root.ajax.static.crudOperation.remove.id, params);
 
             self.active(false);
         };
-
-        var params = {id: self.resource.id()};
 
         self.root.ajax.genericCrud.ajax(
                 self.datatype.rest,

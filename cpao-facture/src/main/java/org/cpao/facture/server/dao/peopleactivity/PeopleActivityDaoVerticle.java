@@ -72,7 +72,6 @@ public class PeopleActivityDaoVerticle extends AbstractVerticle {
             public void handle(Message<JsonObject> message){
                 
                 final JsonObject data = message.body();
-                System.out.println("data:  " + data.encodePrettily());
                 final int people = data.getInteger("id");
                 final JsonArray array = dao.loadByPeople(people);
                 

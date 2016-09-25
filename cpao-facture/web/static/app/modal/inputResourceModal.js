@@ -97,6 +97,10 @@ function InputResourceModal($root, datatypes, seasonController, data, primary) {
                     break;
                 case "composite":
                     break;
+                case "recursive":
+                    break;
+                case "template":
+                    break;
                 case "float":
                     resource[fieldObs.metadata.id] = fieldObs.data() + "";
                     break;
@@ -113,6 +117,9 @@ function InputResourceModal($root, datatypes, seasonController, data, primary) {
                     break;
                 case "select":
                     resource[fieldObs.metadata.id] = fieldObs.data()[0].id();
+                    if (fieldObs.metadata.id === "idHome") {
+                        resource["previous" + fieldObs.metadata.id] = fieldObs.previous;
+                    }
                     break;
                 case "short-string":
                     if (fieldObs.metadata.composite) {
@@ -138,12 +145,23 @@ function InputResourceModal($root, datatypes, seasonController, data, primary) {
             resource[field] = id;
         }
 
+        var params = {};
+        var operation = null;
+
+        if (self.editing()) {
+            params.id = self.editingId();
+            params[datatype.rest] = resource;
+            operation = self.root.ajax.static.crudOperation.update.id;
+        } else {
+            params[datatype.rest] = resource;
+            operation = self.root.ajax.static.crudOperation.save.id;
+        }
+
         var callback = function (data) {
 
             if (typeof data !== "undefined") {
                 if (data.result === 1) {
                     if (!self.inputResourceController.primary) {
-                        console.log(pack);
                         if (datatype.loadableByPeople) {
                             datatype.reload.people(id, pack, function (array) {
                                 pack.resources(array);
@@ -154,6 +172,13 @@ function InputResourceModal($root, datatypes, seasonController, data, primary) {
                                 pack.resources(array);
                             });
                         }
+                    } else {
+//                        console.log(resource);
+                        if (self.editing()) {
+                            datatype.reload.single(self.editingId(), resource);
+                        } else {
+                            datatype.load.single(data.id);
+                        }
                     }
                     self.toggle();
                 } else {
@@ -162,36 +187,22 @@ function InputResourceModal($root, datatypes, seasonController, data, primary) {
             } else {
                 self.failure(true);
             }
-            
-            if(self.subscriber()){
+
+            if (self.subscriber()) {
                 self.subscriber().reload();
             }
+
+            datatype.flow.trigger(operation, params);
 
             self.active(false);
         };
 
-        if (self.editing()) {
-            var params = {};
-            params.id = self.editingId();
-            params[datatype.rest] = resource;
-
-            self.root.ajax.genericCrud.ajax(
-                    datatype.rest,
-                    self.root.ajax.static.crudOperation.update.id,
-                    params,
-                    callback
-                    );
-        } else {
-            var params = {};
-            params[datatype.rest] = resource;
-
-            self.root.ajax.genericCrud.ajax(
-                    datatype.rest,
-                    self.root.ajax.static.crudOperation.save.id,
-                    params,
-                    callback
-                    );
-        }
+        self.root.ajax.genericCrud.ajax(
+                datatype.rest,
+                operation,
+                params,
+                callback
+                );
         self.active(true);
 
     };

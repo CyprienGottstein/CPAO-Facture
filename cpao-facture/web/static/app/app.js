@@ -20,6 +20,7 @@ function AppViewModel() {
 
     self.model = {};
     self.model.datatypeRoot = new GenericDatatype(self);
+    self.controller.overview = new GlobalOverviewController(self, self.model.datatypeRoot.datatypes);
 
     self.modalPrimaryDatatype = {};
     self.modalPrimaryDatatype.inputModal = new InputResourceModal(self, self.model.datatypeRoot.datatypes, self.controller.season,{
@@ -61,21 +62,19 @@ $(window).on('load', function () {
         'template/removeModal.html',
         'template/datatable.html',
         'template/datatableRecursive.html',
-        'template/situationTemplate.html'
+        'template/homeOverview.html',
+        'template/globalOverview.html'
     ];
 
     var n = 0;
     
     var template_holder = $('#template_holder');
-    
-    var call = function () {
-        $.get(templates[n], callback);
-    }
+
+    var call = null;
 
     var callback = function callback (content) {
         
         template_holder.append(content);
-        
         n++;
         if (n < templates.length) {
             $.get(templates[n], call);
@@ -85,6 +84,7 @@ $(window).on('load', function () {
 
             var callback = function (data) {
                 appViewModel.controller.season.setSeason(data.season);
+                appViewModel.controller.overview.load();
             };
             appViewModel.ajax.getCurrentSeason(callback);
             
@@ -97,6 +97,10 @@ $(window).on('load', function () {
                 offset: {top: 50}
             });
         }
+    };
+    
+    var call = function (data) {
+        callback(data);
     };
     
     $('#template_holder').load(templates[n], callback);

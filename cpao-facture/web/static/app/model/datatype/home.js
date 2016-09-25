@@ -100,6 +100,10 @@ function HomeDatatype($root, $parent, baseDatatype, msg) {
         self.datatype = datatype;
         self.datatypeId = datatype.id;
         self.pack = pack;
+        
+        self.reload = function(data) {
+            self.name(data.name);
+        };
 
         self.rebind = function () {
         };

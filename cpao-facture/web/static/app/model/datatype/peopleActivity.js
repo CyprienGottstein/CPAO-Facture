@@ -121,6 +121,17 @@ function PeopleActivityDatatype($root, $parent, baseDatatype, msg) {
         self.idInsurance = ko.observable(new ResourceBinder(self.root, self, data.idInsurance, datatype, datatype.field.idInsurance.subtype));
         self.idActivity = ko.observable(new ResourceBinder(self.root, self, data.idActivity, datatype, datatype.field.idActivity.subtype));
 
+        self.reload = function (data) {
+            self.family(data.family);
+            self.observator(data.observator);
+            self.teacher(data.teacher);
+            self.season(data.season);
+
+            self.idPeople().id(data.idPeople);
+            self.idInsurance().id(data.idInsurance);
+            self.idActivity().id(data.idActivity);
+        };
+
         self.rebind = function () {
             self.idPeople().rebind();
             self.idInsurance().rebind();
@@ -163,13 +174,13 @@ function PeopleActivityDatatype($root, $parent, baseDatatype, msg) {
             });
 
             var price = 0;
-            
+
             datatype().pack().resources().forEach(function (resource) {
                 if (resource.id() === self.idActivity().id()) {
                     price += resource.licenceCost() + resource.cotisationCost();
                 }
             });
-            
+
             self.root.model.datatypeRoot.datatypes().forEach(function (dt) {
                 if (dt().id === self.datatype.field.idInsurance.subtype.id) {
                     datatype = dt;

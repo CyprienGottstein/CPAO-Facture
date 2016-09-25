@@ -18,50 +18,47 @@ import io.vertx.core.json.JsonObject;
  */
 public class BillGeneratorVerticle extends AbstractVerticle {
     
-    protected BillGenerator billGenerator = new BillGeneratorImpl();
+    protected BillGeneratorHandler handler = new BillGeneratorHandlerImpl();
     
     @Override
     public void start() {
         
         final EventBus bus = vertx.eventBus();
-        bus.consumer("org.cpao.facture.server.service.BillGeneratorVerticle-generate", new Handler<Message<JsonObject>>() {
+        bus.consumer("org.cpao.facture.server.service.BillGeneratorVerticle-generate-single", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message) {
                 
                 final int id = message.body().getInteger("id");
                 final int season = message.body().getInteger("season");
                 
-                final JsonArray activities = billGenerator.retrieveHomeActivities(id, season);
+                final JsonObject o = handler.generateSingle(id, season);
                 
-                float totalCost = 0;
-                float totalDeposit = 0;
-                float totalSolded = 0;
-                float totalMissing = 0;
+                message.reply(o);
                 
-                for (int i = 0; i < activities.size(); i++){
-                    final JsonObject line = activities.getJsonObject(i);
-                    totalCost += line.getFloat("insuranceCost");
-                    totalCost += line.getFloat("cotisationCost");
-                    totalCost += line.getFloat("licenceCost");
-                }
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.service.BillGeneratorVerticle-generate-all", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message) {
                 
-                final JsonArray payments = billGenerator.retrieveHomePayments(id, season);
+                final int season = message.body().getInteger("season");
                 
-                for (int i = 0; i < payments.size(); i++){
-                    final JsonObject line = payments.getJsonObject(i);
-                    totalDeposit += line.getFloat("amount");
-                    if (line.getBoolean("solded")){
-                        totalSolded += line.getFloat("amount");
-                    }
-                }
+                final JsonArray array = handler.generateAll(season);
                 
-                totalMissing = totalCost - totalDeposit;
+                message.reply(array);
                 
-                final JsonObject o = new JsonObject()
-                        .put("totalCost", totalCost)
-                        .put("totalDeposit", totalDeposit)
-                        .put("totalSolded", totalSolded)
-                        .put("totalMissing", totalMissing);
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.service.BillGeneratorVerticle-generate-global", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message) {
+                
+                final int season = message.body().getInteger("season");
+                
+                final JsonObject o = handler.generateGlobal(season);
+                
                 message.reply(o);
                 
             }

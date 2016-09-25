@@ -43,6 +43,7 @@ function RecursiveReaderController($root, $parent, datatype, pack, resource, fie
                 break;
             case "home":
                 console.log(self.field.pointerToDatatype());
+                console.log(resource.id());
                 self.field.pointerToDatatype().reload.home(resource.id(), self.pack(), function (array) {
                     console.log(array);
                     callback(array);

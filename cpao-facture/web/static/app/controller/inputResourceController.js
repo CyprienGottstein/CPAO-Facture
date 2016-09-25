@@ -171,7 +171,7 @@ function InputResourceController($root, primary) {
                     });
                     break;
                 case "template":
-                    fieldObs.template = ko.observable(new HomeBillController(self.root, fieldObs.metadata.dependencies));
+                    fieldObs.template = ko.observable(new HomeOverviewController(self.root));
                     break;
             }
 
@@ -233,6 +233,7 @@ function InputResourceController($root, primary) {
                                     fieldObs.data([option]);
                                 }
                             });
+                            fieldObs.previous = _.clone(fieldObs.data()[0].id());
                             break;
                         case "datatype":
                             fieldObs.pack(fieldObs.metadata.pointerToDatatype().getDatapack());
@@ -271,7 +272,7 @@ function InputResourceController($root, primary) {
                             self.editField(field.compositeFieldsList[id], resource);
                             break;
                         case "template":
-//                            fieldObs.template = ko.observable(new HomeBillController(self.root, fieldObs.metadata.dependencies));
+                            fieldObs.template().setHomeId(resource.id());
                             break;
                         default:
                             fieldObs.data(resource[field.id]());

@@ -77,7 +77,7 @@ function GenericDatatype(root) {
     self.enhance = function (datatypePointer) {
 
         var datatype = datatypePointer();
-        
+
         datatype.modal = {};
         datatype.setInputModal = function (modal) {
             datatype.modal.inputModal = modal;
@@ -95,7 +95,7 @@ function GenericDatatype(root) {
         datatype.toggle = function (data) {
             self.root.controller.season.show(data.loadableBySeason);
         };
-        
+
         datatype.pack = ko.observable();
         datatype.getDatapack = function () {
             var datapack = {};
@@ -107,9 +107,11 @@ function GenericDatatype(root) {
         datatype.pack(datatype.getDatapack());
 
         datatype.pack().resources.subscribe(function () {
+            console.log("rebind");
             self.rebindAll();
         });
 
+        datatype.load = {};
         datatype.reload = {};
         datatype.reload.callback = function (data) {
             var array = datatype.pack().resources();
@@ -131,7 +133,25 @@ function GenericDatatype(root) {
                 array.push(resourceObject);
             });
             datatype.pack().resources(array);
-            
+        };
+
+        datatype.load.callbackSingle = function (data) {
+            var array = datatype.pack().resources();
+            var resourceObject = new datatype.model(root, self, data, datatype, datatype.pack());
+            resourceObject.toggleEditModal = function () {
+                if (datatype.modal.inputModal) {
+                    datatype.modal.inputModal.edit(resourceObject, resourceObject.datatype);
+                }
+            };
+
+            resourceObject.toggleRemoveModal = function () {
+                if (datatype.modal.removeModal) {
+                    datatype.modal.removeModal.focus(resourceObject, resourceObject.datatype, resourceObject.pack);
+                    datatype.modal.removeModal.toggle(resourceObject.datatype);
+                }
+            };
+            array.push(resourceObject);
+            datatype.pack().resources(array);
         };
 
         if (datatype.primary || datatype.static) {
@@ -144,7 +164,25 @@ function GenericDatatype(root) {
                         datatype.reload.callback
                         );
             };
-            
+
+            datatype.reload.single = function (id, data) {
+                datatype.pack().resources().forEach(function (resource) {
+                    if (resource.id() === id) {
+                        resource.reload(data);
+                        resource.rebind();
+                    }
+                });
+            };
+
+            datatype.load.single = function (data) {
+                root.ajax.genericCrud.ajax(
+                        datatype.rest,
+                        root.ajax.static.crudOperation.loadSingle.id,
+                        {id: data},
+                datatype.load.callbackSingle
+                        );
+            };
+
             datatype.reload.all();
 
         }
@@ -192,7 +230,7 @@ function GenericDatatype(root) {
                 array.push(resourceObject);
             });
 //            arrayObs(array);
-            
+
             if (typeof followup !== "undefined") {
                 followup(array);
             }
@@ -205,7 +243,7 @@ function GenericDatatype(root) {
                         datatype.rest,
                         root.ajax.static.crudOperation.loadByPeople.id,
                         {id: id},
-                        datatype.reload.partialCallback,
+                datatype.reload.partialCallback,
                         pack,
                         followup
                         );
@@ -219,12 +257,14 @@ function GenericDatatype(root) {
                         datatype.rest,
                         root.ajax.static.crudOperation.loadByHome.id,
                         {id: id},
-                        datatype.reload.partialCallback,
+                datatype.reload.partialCallback,
                         pack,
                         followup
                         );
             };
         }
+
+        datatype.flow = new FlowController(self.root, datatype);
 
         datatype.setId = function (id) {
             datatype.params = {};
@@ -239,17 +279,17 @@ function GenericDatatype(root) {
         self.enhance(datatype);
     });
 
-    self.bindPrimaryModal = function(inputModal, removeModal) {
-        self.datatypes().forEach(function(datatype){
+    self.bindPrimaryModal = function (inputModal, removeModal) {
+        self.datatypes().forEach(function (datatype) {
             if (datatype().primary) {
                 datatype().setInputModal(inputModal);
                 datatype().setRemoveModal(removeModal);
             }
         });
     };
-    
-    self.bindSecondaryModal = function(inputModal, removeModal) {
-        self.datatypes().forEach(function(datatype){
+
+    self.bindSecondaryModal = function (inputModal, removeModal) {
+        self.datatypes().forEach(function (datatype) {
             if (!datatype().primary) {
                 datatype().setInputModal(inputModal);
                 datatype().setRemoveModal(removeModal);

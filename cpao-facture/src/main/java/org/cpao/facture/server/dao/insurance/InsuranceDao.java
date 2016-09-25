@@ -14,10 +14,11 @@ import io.vertx.core.json.JsonObject;
  */
 public interface InsuranceDao {
     
-    public int save(JsonObject insurance);
+    public JsonObject save(JsonObject insurance);
     public int remove(int id);
     public int update(int id, JsonObject activity);
     public JsonArray loadBySeason(int season);
+    public JsonObject loadSingle(int id);
     public JsonArray loadAll();
     
 }

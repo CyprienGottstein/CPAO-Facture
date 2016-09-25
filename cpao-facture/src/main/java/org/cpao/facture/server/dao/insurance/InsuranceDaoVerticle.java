@@ -30,9 +30,12 @@ public class InsuranceDaoVerticle extends AbstractVerticle {
                 
                 final JsonObject insurance = message.body();
                 System.out.println(insurance.encodePrettily());
-                final int result = dao.save(insurance);
+                final JsonObject result = dao.save(insurance);
                 
-                message.reply(result);
+                final JsonObject o = new JsonObject()
+                        .put("result", result.getInteger("status"))
+                        .put("id", result.getInteger("id"));
+                message.reply(o);
                 
             }
         });
@@ -73,6 +76,19 @@ public class InsuranceDaoVerticle extends AbstractVerticle {
                 final JsonArray array = dao.loadBySeason(season);
                 
                 message.reply(array);
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-load-single", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message){
+                
+                final JsonObject data = message.body();
+                final int season = data.getInteger("id");
+                final JsonObject o = dao.loadSingle(season);
+                
+                message.reply(o);
                 
             }
         });

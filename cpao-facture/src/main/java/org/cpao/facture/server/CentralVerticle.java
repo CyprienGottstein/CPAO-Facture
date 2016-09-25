@@ -38,6 +38,21 @@ public class CentralVerticle extends AbstractVerticle {
 
             }
         });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-activity-load-single", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message) {
+
+                bus.send("org.cpao.facture.server.dao.activity.ActivityDaoVerticle-load-single", message.body(), new Handler<AsyncResult<Message<JsonObject>>>() {
+
+                    @Override
+                    public void handle(AsyncResult<Message<JsonObject>> result) {
+                        message.reply(result.result().body());
+                    }
+                });
+
+            }
+        });
 
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-activity-load-all", new Handler<Message<JsonObject>>() {
             @Override
@@ -107,6 +122,12 @@ public class CentralVerticle extends AbstractVerticle {
                 message.reply(result.result().body());
             });
         });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-load-single", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-load-single", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
 
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-insurance-load-all", (Message<JsonObject> message) -> {
             bus.send("org.cpao.facture.server.dao.insurance.InsuranceDaoVerticle-load-all", null, (AsyncResult<Message<JsonArray>> result) -> {
@@ -146,6 +167,12 @@ public class CentralVerticle extends AbstractVerticle {
                 message.reply(result.result().body());
             });
         });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-people-load-single", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.people.PeopleDaoVerticle-load-single", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
 
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-people-save", (Message<JsonObject> message) -> {
             bus.send("org.cpao.facture.server.dao.people.PeopleDaoVerticle-save", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
@@ -170,6 +197,24 @@ public class CentralVerticle extends AbstractVerticle {
          */
         bus.consumer("org.cpao.facture.server.CentralVerticle-dao-home-load-all", (Message<JsonObject> message) -> {
             bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-all", null, (AsyncResult<Message<JsonArray>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-home-load-activity", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-activity", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-home-load-people", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-people", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-dao-home-load-single", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-single", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
                 message.reply(result.result().body());
             });
         });
@@ -281,13 +326,25 @@ public class CentralVerticle extends AbstractVerticle {
             });
         });
 
-        bus.consumer("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate", (Message<JsonObject> message) -> {
-
-            // Retrieve data first, pass them at the billGenerator afterwards.
-            final int home = message.body().getInteger("id");
-            final int season = message.body().getInteger("season");
-
-            bus.send("org.cpao.facture.server.service.BillGeneratorVerticle-generate", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+        
+        
+        /**
+         * Bill Type Redirection
+         */
+        bus.consumer("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate-single", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.service.BillGeneratorVerticle-generate-single", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate-all", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.service.BillGeneratorVerticle-generate-all", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
+                message.reply(result.result().body());
+            });
+        });
+        
+        bus.consumer("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate-global", (Message<JsonObject> message) -> {
+            bus.send("org.cpao.facture.server.service.BillGeneratorVerticle-generate-global", message.body(), (AsyncResult<Message<JsonObject>> result) -> {
                 message.reply(result.result().body());
             });
         });

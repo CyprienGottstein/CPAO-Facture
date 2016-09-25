@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!-- param : Datatype -> DataPack -->
+<script type="text/html" id="overviewTemplate">
+    <div class="container">
+        <div class="row">
+            <h1>Enveloppe totale : </h1>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <span> Total à recevoir :</span>
+                <span>
+                    <label data-bind="text: globalOverview().total"></label>
+                    <label> euros </label>
+                </span>
+            </div>
+            <div class="col-sm-3">
+                <span> Total déposé :</span>
+                <span>
+                    <label data-bind="text: globalOverview().totalDeposit"></label>
+                    <label> euros </label>
+                </span>
+            </div>
+            <div class="col-sm-3">
+                <span> Total soldé/encaissé :</span>
+                <span>
+                    <label data-bind="text: globalOverview().totalSolded"></label>
+                    <label> euros </label>
+                </span>
+            </div>
+            <div class="col-sm-3">
+                <span> Reste à recevoir :</span>
+                <span>
+                    <label data-bind="text: globalOverview().totalMissing"></label>
+                    <label> euros </label>
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div style="text-align: center;" class="col-sm-12"> - - - - </div>
+        </div>
+        <table class="table">
+        <thead>
+            <tr>
+                <th> Id </th>
+                <th> Foyer </th>
+                <th> Total à recevoir </th>
+                <th> Total déposé </th>
+                <th> Total soldé/encaissé </th>
+                <th> Reste à recevoir </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ko foreach : { data : homeOverview, as :'overview' } -->
+                <tr data-bind="css : { danger : printingMode() === 0, warning : printingMode() === 1, info : printingMode() === 2, success : printingMode() === 3}">
+                    <td data-bind="text : id"></td>
+                    <td data-bind="text : home"></td>
+                    <td data-bind="text : total"></td>
+                    <td data-bind="text : totalDeposit"></td>
+                    <td data-bind="text : totalSolded"></td>
+                    <td data-bind="text : totalMissing"></td>
+                </tr>
+            <!-- /ko -->
+        </tbody>
+    </table>
+    </div>
+</script>

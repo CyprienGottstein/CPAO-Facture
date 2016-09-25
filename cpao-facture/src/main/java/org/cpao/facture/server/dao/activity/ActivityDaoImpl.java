@@ -25,26 +25,32 @@ import org.cpao.facture.server.model.Activity;
 public class ActivityDaoImpl implements ActivityDao {
 
     @Override
-    public int save(JsonObject activity) {
+    public JsonObject save(JsonObject activity) {
         
         try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
             
             System.out.println("Saving : " + activity.encodePrettily());
 
             final Statement s = c.createStatement();
+            final JsonObject o = new JsonObject()
+                    .put("result", 1);
             
-            final int result = s.executeUpdate("INSERT INTO CPAO.ACTIVITY (ID, LABEL, LICENCE_COST, COTISATION_COST, SEASON) VALUES ( "
+            final ResultSet result = s.executeQuery("INSERT INTO CPAO.ACTIVITY (ID, LABEL, LICENCE_COST, COTISATION_COST, SEASON) VALUES ( "
                     + "NEXT VALUE FOR CPAO.SEQ_ACTIVITY, "
                     + "'" + activity.getString("label") + "', "
                     + Float.parseFloat(activity.getString("licenceCost")) + ", "
                     + Float.parseFloat(activity.getString("cotisationCost")) + ","
-                    + activity.getInteger("season") + ")");
+                    + activity.getInteger("season") + "); CALL IDENTITY()");
             
-             return result;
+            while(result.next()){
+                o.put("id", result.getInt(1));
+            }
+            
+             return o;
 
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
-            return -1;
+            return new JsonObject().put("result", -1);
         }
         
     }
@@ -115,6 +121,36 @@ public class ActivityDaoImpl implements ActivityDao {
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
             return new JsonArray();
+        }
+        
+    }
+    
+    @Override
+    public JsonObject loadSingle(int id){
+        
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+            
+            final ResultSet result = s.executeQuery("SELECT * FROM CPAO.ACTIVITY WHERE ID = " + id);
+            final JsonArray array = new JsonArray();
+            
+            final Activity activity = new Activity();
+            while (result.next()){
+                activity.setId(result.getInt("id"));
+                activity.setSeason(result.getInt("SEASON"));
+                activity.setLabel(result.getString("LABEL"));
+                activity.setLicenceCost(result.getFloat("LICENCE_COST"));
+                activity.setCotisationCost(result.getFloat("COTISATION_COST"));
+                
+                array.add(activity);
+            }
+            
+            return activity;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+            return new JsonObject();
         }
         
     }

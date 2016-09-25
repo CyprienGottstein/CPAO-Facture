@@ -75,6 +75,27 @@ public class RestHandler {
             }
         });
     }
+    
+    public void activityLoadSingle(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Loading activity with id : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-activity-load-single", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
 
     public void activityLoadAll(RoutingContext routingContext) {
 
@@ -174,6 +195,27 @@ public class RestHandler {
         vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-insurance-load-bySeason", body, new Handler<AsyncResult<Message<JsonArray>>>() {
             @Override
             public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+    
+    public void insuranceLoadSingle(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Loading insurance with id :  : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-insurance-load-single", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
                 HttpServerResponse response = routingContext.response();
                 if (result.failed()) {
                     response.setStatusCode(500);
@@ -310,6 +352,27 @@ public class RestHandler {
             }
         });
     }
+    
+    public void peopleLoadSingle(RoutingContext routingContext) {
+        
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Loading people with home id : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-people-load-single", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
 
     public void peopleSave(RoutingContext routingContext) {
 
@@ -387,6 +450,69 @@ public class RestHandler {
         vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-home-load-all", null, new Handler<AsyncResult<Message<JsonArray>>>() {
             @Override
             public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+    
+    public void homeLoadByActivity(RoutingContext routingContext) {
+        
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int activity = body.getInteger("id");
+
+        System.out.println("Loading home with id activity : " + activity);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-home-load-activity", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+    
+    public void homeLoadByPeople(RoutingContext routingContext) {
+        
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int people = body.getInteger("id");
+
+        System.out.println("Loading home with id people : " + people);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-home-load-people", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    response.end(result.result().body().encode());
+                }
+            }
+        });
+    }
+    
+    public void homeLoadSingle(RoutingContext routingContext) {
+        
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int id = body.getInteger("id");
+
+        System.out.println("Loading home with id : " + id);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-dao-home-load-single", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
                 HttpServerResponse response = routingContext.response();
                 if (result.failed()) {
                     response.setStatusCode(500);
@@ -762,7 +888,53 @@ public class RestHandler {
 
         System.out.println("Generating bill for home with id : " + id + " for season : " + season);
 
-        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate-single", body, new Handler<AsyncResult<Message<JsonObject>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonObject>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+    
+    public void billGenerateAll(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int season = body.getInteger("season");
+
+        System.out.println("Generating global bill of the club for season : " + season);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate-all", body, new Handler<AsyncResult<Message<JsonArray>>>() {
+            @Override
+            public void handle(AsyncResult<Message<JsonArray>> result) {
+                HttpServerResponse response = routingContext.response();
+                if (result.failed()) {
+                    response.setStatusCode(500);
+                    response.end();
+                } else {
+                    System.out.println(result.result().body().encode());
+                    response.end("" + result.result().body().encode());
+                }
+            }
+        });
+
+    }
+    
+    public void billGenerateGlobal(RoutingContext routingContext) {
+
+        final JsonObject body = routingContext.getBodyAsJson();
+        final int season = body.getInteger("season");
+
+        System.out.println("Generating global bill of the club for season : " + season);
+
+        vertx.eventBus().send("org.cpao.facture.server.CentralVerticle-service-billGenerator-generate-global", body, new Handler<AsyncResult<Message<JsonObject>>>() {
             @Override
             public void handle(AsyncResult<Message<JsonObject>> result) {
                 HttpServerResponse response = routingContext.response();

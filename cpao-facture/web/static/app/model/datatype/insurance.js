@@ -12,7 +12,7 @@ function InsuranceDatatype($root, $parent, baseDatatype, msg) {
     // Safe pointer on the root of the application to access other controlers
     self.root = $root;
     self.parent = $parent;
-    
+
     self.baseDatatype = baseDatatype;
 
     self.id = 1;
@@ -81,14 +81,20 @@ function InsuranceDatatype($root, $parent, baseDatatype, msg) {
         self.datatypeId = datatype.id;
         self.pack = pack;
 
+        self.reload = function (data) {
+            self.season(data.season);
+            self.label(data.label);
+            self.insuranceCost(data.insuranceCost);
+        };
+
         self.rebind = function () {
         };
 
         self.getLabel = function () {
             return self.msg.announce.start + " l'assurance " + self.msg.announce.middle + self.label() + self.msg.announce.end;
         };
-        
-        self.getPrice = function() {
+
+        self.getPrice = function () {
             var str = "";
             return str;
         };

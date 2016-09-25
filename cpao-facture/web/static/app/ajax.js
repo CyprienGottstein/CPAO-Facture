@@ -23,22 +23,35 @@ function Ajax(root) {
 
     self.static.crudOperation = {};
     self.static.crudOperation.loadAll = {id: 0, rest: "load/all"};
+    self.static.crudOperation.loadSingle = {id: 11, rest: "load/single"};
     self.static.crudOperation.loadBySeason = {id: 1, rest: "load/season"};
     self.static.crudOperation.loadByPeople = {id: 5, rest: "load/people"};
     self.static.crudOperation.loadByHome = {id: 6, rest: "load/home"};
+    self.static.crudOperation.loadByActivity = {id: 10, rest: "load/activity"};
     self.static.crudOperation.save = {id: 2, rest: "save"};
     self.static.crudOperation.update = {id: 3, rest: "update"};
     self.static.crudOperation.remove = {id: 4, rest: "remove"};
-    self.static.crudOperation.generate = {id: 7, rest: "generate"};
+    self.static.crudOperation.generate = {id: 7, rest: "generate/single"};
+    self.static.crudOperation.generateAll = {id: 8, rest: "generate/all"};
+    self.static.crudOperation.generateGlobal = {id: 9, rest: "generate/global"};
+    
     self.static.operations = [
         self.static.crudOperation.loadAll,
+        self.static.crudOperation.loadSingle,
         self.static.crudOperation.loadBySeason,
         self.static.crudOperation.loadByPeople,
         self.static.crudOperation.loadByHome,
+        self.static.crudOperation.loadByActivity,
         self.static.crudOperation.save,
         self.static.crudOperation.update,
         self.static.crudOperation.remove,
-        self.static.crudOperation.generate
+        self.static.crudOperation.generate,
+        self.static.crudOperation.generateAll,
+        self.static.crudOperation.generateGlobal
+    ];
+    
+    self.flow = [
+        
     ];
 
     self.getCurrentSeason = function (callback) {

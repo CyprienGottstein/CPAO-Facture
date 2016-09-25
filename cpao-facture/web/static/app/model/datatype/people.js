@@ -26,7 +26,7 @@ function PeopleDatatype($root, $parent, baseDatatype, msg) {
     self.loadableBySeason = false;
     self.loadableByHome = true;
     self.msg = msg;
-    
+
     self.field = {
         id: {
             id: "id",
@@ -107,17 +107,11 @@ function PeopleDatatype($root, $parent, baseDatatype, msg) {
         self.pack = pack;
 
         self.id = ko.observable(data.id);
-        self.firstname = ko.observable(data.firstname)
-                .extend({required: {params: true, message: "Ce champ est obligatoire"}})
-                .extend({minLength: {params: 2, message: "Le prénom ne peut pas faire moins de deux caractères."}});
-        self.lastname = ko.observable(data.lastname)
-                .extend({required: {params: true, message: "Ce champ est obligatoire"}})
-                .extend({minLength: {params: 2, message: "Le nom ne peut pas faire moins de deux caractères."}});
+        self.firstname = ko.observable(data.firstname);
+        self.lastname = ko.observable(data.lastname);
 
         var formattedDate = moment(new Date(data.birthday)).format('DD/MM/YYYY');
-        self.birthday = ko.observable(formattedDate)
-                .extend({required: {params: true, message: "Ce champ est obligatoire"}})
-                .extend({date: {params: true, message: "La date de naissance doit être une date !"}});
+        self.birthday = ko.observable(formattedDate);
 
         var now = Date.now();
         var bday = new Date(data.birthday);
@@ -127,6 +121,22 @@ function PeopleDatatype($root, $parent, baseDatatype, msg) {
         self.age = ko.observable(age);
         self.idHome = ko.observable(new ResourceBinder(self.root, self, data.idHome, datatype, datatype.field.idHome.subtype));
 
+        self.reload = function (data) {
+            self.firstname(data.firstname);
+            self.lastname(data.lastname);
+
+            var formattedDate = moment(new Date(data.birthday)).format('DD/MM/YYYY');
+            self.birthday = ko.observable(formattedDate);
+
+            var now = Date.now();
+            var bday = new Date(data.birthday);
+            var diff = now - bday;
+            var age = Math.floor(new Date(diff).getTime() / (1000 * 60 * 60 * 24 * 365.25));
+
+            self.age(age);
+            self.idHome().id(data.idHome);
+        };
+
         self.rebind = function () {
             self.idHome().rebind();
         };
@@ -134,7 +144,7 @@ function PeopleDatatype($root, $parent, baseDatatype, msg) {
         self.getLabel = function () {
             return self.msg.announce.start + " l'adhérent " + self.msg.announce.middle + self.firstname() + " " + self.lastname() + self.msg.announce.end;
         };
-        
+
         self.getDescription = function () {
             var str = "";
             str += self.firstname();
@@ -143,11 +153,11 @@ function PeopleDatatype($root, $parent, baseDatatype, msg) {
             str += " - ";
             str += self.age();
             str += " ans";
-            
+
             return str;
         };
-        
-        self.getPrice = function() {
+
+        self.getPrice = function () {
             var str = "";
             return str;
         };

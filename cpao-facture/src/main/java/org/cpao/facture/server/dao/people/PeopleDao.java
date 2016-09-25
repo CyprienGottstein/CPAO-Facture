@@ -14,10 +14,11 @@ import io.vertx.core.json.JsonObject;
  */
 public interface PeopleDao {
     
-    public int save(JsonObject people);
+    public JsonObject save(JsonObject people);
     public int remove(int id);
     public int update(int id, JsonObject people);
     public JsonArray loadAll();
-    public JsonArray loadByHome(final int integer);
+    public JsonArray loadByHome(final int home);
+    public JsonObject loadSingle(final int id);
     
 }

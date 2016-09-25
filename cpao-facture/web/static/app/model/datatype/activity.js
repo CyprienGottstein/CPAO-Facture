@@ -12,20 +12,20 @@ function ActivityDatatype($root, $parent, baseDatatype, msg) {
     // Safe pointer on the root of the application to access other controlers
     self.root = $root;
     self.parent = $parent;
-    
+
     self.baseDatatype = baseDatatype;
-    
-    self.id= 0;
-    self.primary= true;
-    self.rest= "activity";
-    self.label= "Activités";
-    self.tab= "#activitySubTab";
-    self.tabId= "activitySubTab";
-    self.tabLabel= "Gestion des Activités";
-    self.modalLabel= "Saisie d'une activité";
-    self.loadableBySeason= true;
+
+    self.id = 0;
+    self.primary = true;
+    self.rest = "activity";
+    self.label = "Activités";
+    self.tab = "#activitySubTab";
+    self.tabId = "activitySubTab";
+    self.tabLabel = "Gestion des Activités";
+    self.modalLabel = "Saisie d'une activité";
+    self.loadableBySeason = true;
     self.msg = msg;
-    
+
     self.field = {
         id: {
             id: "id",
@@ -90,14 +90,21 @@ function ActivityDatatype($root, $parent, baseDatatype, msg) {
         self.msg = datatype.msg;
         self.pack = pack;
 
+        self.reload = function (data) {
+            self.season(data.season);
+            self.label(data.label);
+            self.licenceCost(data.licenceCost);
+            self.cotisationCost(data.cotisationCost);
+        };
+
         self.rebind = function () {
         };
 
         self.getLabel = function () {
             return self.msg.announce.start + " l'activité " + self.msg.announce.middle + self.label() + self.msg.announce.end;
         };
-        
-        self.getPrice = function() {
+
+        self.getPrice = function () {
             var str = "";
             return str;
         };

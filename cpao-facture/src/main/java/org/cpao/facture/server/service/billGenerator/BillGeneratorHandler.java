@@ -6,14 +6,16 @@
 package org.cpao.facture.server.service.billGenerator;
 
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  *
  * @author Cyprien
  */
-public interface BillGenerator {
+public interface BillGeneratorHandler {
     
-    public JsonArray retrieveHomeActivities(final int home, final int season);
-    public JsonArray retrieveHomePayments(final int home, final int season);
+    public JsonObject generateSingle(int home, int season);
+    public JsonArray generateAll(int season);
+    public JsonObject generateGlobal(int season);
     
 }

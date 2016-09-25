@@ -5,34 +5,34 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <!-- param : InputResourceController -->
-<script type="text/html" id="situationTemplate">
+<script type="text/html" id="homeOverviewTemplate">
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-3">
                 <span> Total à payer :</span>
                 <span>
-                    <label data-bind="text: total"></label>
+                    <label data-bind="text: overview().total"></label>
                     <label> euros </label>
                 </span>
             </div>
             <div class="col-sm-3">
                 <span> Total déposé :</span>
                 <span>
-                    <label data-bind="text: totalDeposit"></label>
+                    <label data-bind="text: overview().totalDeposit"></label>
                     <label> euros </label>
                 </span>
             </div>
             <div class="col-sm-3">
                 <span> Total soldé/encaissé :</span>
                 <span>
-                    <label data-bind="text: totalSolded"></label>
+                    <label data-bind="text: overview().totalSolded"></label>
                     <label> euros </label>
                 </span>
             </div>
             <div class="col-sm-3">
                 <span> Reste à payer :</span>
                 <span>
-                    <label data-bind="text: totalMissing"></label>
+                    <label data-bind="text: overview().totalMissing"></label>
                     <label> euros </label>
                 </span>
             </div>

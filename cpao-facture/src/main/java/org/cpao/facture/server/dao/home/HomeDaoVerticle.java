@@ -27,15 +27,14 @@ public class HomeDaoVerticle extends AbstractVerticle {
         bus.consumer("org.cpao.facture.server.dao.home.HomeDaoVerticle-save", new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
-                System.out.println("proc");
+                
                 final JsonObject people = message.body();
-                System.out.println(people.encodePrettily());
-                final int result = dao.save(people);
+                final JsonObject result = dao.save(people);
                 
-                final JsonObject reply = new JsonObject();
-                reply.put("result", result);
+//                final JsonObject reply = new JsonObject();
+//                reply.put("result", result);
                 
-                message.reply(reply);
+                message.reply(result);
                 
             }
         });
@@ -74,6 +73,42 @@ public class HomeDaoVerticle extends AbstractVerticle {
                 final JsonArray array = dao.loadAll();
                 
                 message.reply(array);
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-activity", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message){
+                
+                final int activity = message.body().getInteger("id");
+                final JsonObject o = dao.loadByActivity(activity);
+                
+                message.reply(o);
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-people", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message){
+                
+                final int people = message.body().getInteger("id");
+                final JsonObject o = dao.loadByPeople(people);
+                
+                message.reply(o);
+                
+            }
+        });
+        
+        bus.consumer("org.cpao.facture.server.dao.home.HomeDaoVerticle-load-single", new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> message){
+                
+                final int id = message.body().getInteger("id");
+                final JsonObject o = dao.loadSingle(id);
+                
+                message.reply(o);
                 
             }
         });

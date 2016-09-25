@@ -25,23 +25,31 @@ import org.cpao.facture.server.model.People;
 public class PeopleDaoImpl implements PeopleDao {
 
     @Override
-    public int save(JsonObject people) {
+    public JsonObject save(JsonObject people) {
         try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
 
             final Statement s = c.createStatement();
 
-            final int result = s.executeUpdate("INSERT INTO CPAO.PERSON (ID, FIRSTNAME, LASTNAME, BIRTHDAY) VALUES ("
+            final JsonObject o = new JsonObject()
+                    .put("result", 1);
+            
+            final ResultSet result = s.executeQuery("INSERT INTO CPAO.PERSON (ID, ID_HOME, FIRSTNAME, LASTNAME, BIRTHDAY) VALUES ("
                     + "NEXT VALUE FOR CPAO.SEQ_PERSON, "
+                    + people.getInteger("idHome") + ", "
                     + "'" + people.getString("firstname") + "', "
                     + "'" + people.getString("lastname") + "', "
-                    + people.getLong("birthday") + " ); INSERT INTO CPAO.HOME_PERSON (ID_HOME, ID_PERSON) VALUES ("
-                    + people.getInteger("home")+ ", IDENTITY() )");
+                    + people.getLong("birthday") + " ); CALL IDENTITY() ;");
             
-            return result;
+            while(result.next()){
+                o.put("id", result.getInt(1));
+            }
+            
+            return o;
 
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
-            return -1;
+            return new JsonObject()
+                    .put("result", -1);
         }
     }
 
@@ -71,11 +79,11 @@ public class PeopleDaoImpl implements PeopleDao {
             final Statement s = c.createStatement();
             // LABEL, INSURANCE_COST, SEASON
             final int result = s.executeUpdate("UPDATE CPAO.PERSON SET "
+                    + "ID_HOME = " + people.getInteger("idHome") + ", "
                     + "FIRSTNAME = '" + people.getString("firstname") + "',"
                     + "LASTNAME = '" + people.getString("lastname") + "',"
                     + "BIRTHDAY = " + people.getLong("birthday")
-                    + " WHERE ID = " + id + ";"
-                    + "UPDATE CPAO.HOME_PERSON SET ID_HOME = " + people.getInteger("idHome") + " WHERE ID_PERSON = " + id);
+                    + " WHERE ID = " + id + ";");
 
             return result;
 
@@ -93,19 +101,18 @@ public class PeopleDaoImpl implements PeopleDao {
 
             final Statement s = c.createStatement();
 
-            final ResultSet result = s.executeQuery("SELECT CPAO.PERSON.*, CPAO.HOME_PERSON.ID_HOME AS HOME "
-                    + "FROM CPAO.PERSON LEFT JOIN CPAO.HOME_PERSON "
-                    + "ON CPAO.PERSON.ID = CPAO.HOME_PERSON.ID_PERSON "
+            final ResultSet result = s.executeQuery("SELECT CPAO.PERSON.*"
+                    + "FROM CPAO.PERSON "
                     + "ORDER BY ID");
             final JsonArray array = new JsonArray();
 
             while (result.next()) {
                 final People people = new People();
                 people.setId(result.getInt("id"));
+                people.setHome(result.getInt("ID_HOME"));
                 people.setFirstname(result.getString("FIRSTNAME"));
                 people.setLastname(result.getString("LASTNAME"));
                 people.setBirthDate(result.getLong("BIRTHDAY"));
-                people.setHome(result.getInt("HOME"));
                 people.addActivities(new JsonArray());
                 array.add(people);
             }
@@ -126,20 +133,19 @@ public class PeopleDaoImpl implements PeopleDao {
 
             final Statement s = c.createStatement();
 
-            final ResultSet result = s.executeQuery("SELECT CPAO.PERSON.*, CPAO.HOME_PERSON.ID_HOME AS HOME "
-                    + "FROM CPAO.PERSON LEFT JOIN CPAO.HOME_PERSON "
-                    + "ON CPAO.PERSON.ID = CPAO.HOME_PERSON.ID_PERSON "
-                    + "WHERE CPAO.HOME_PERSON.ID_HOME = " + home
+            final ResultSet result = s.executeQuery("SELECT CPAO.PERSON.*"
+                    + "FROM CPAO.PERSON "
+                    + "WHERE CPAO.PERSON.ID_HOME = " + home
                     + " ORDER BY ID");
             final JsonArray array = new JsonArray();
 
             while (result.next()) {
                 final People people = new People();
-                people.setId(result.getInt("id"));
+                people.setId(result.getInt("ID"));
                 people.setFirstname(result.getString("FIRSTNAME"));
                 people.setLastname(result.getString("LASTNAME"));
                 people.setBirthDate(result.getLong("BIRTHDAY"));
-                people.setHome(result.getInt("HOME"));
+                people.setHome(result.getInt("ID_HOME"));
                 people.addActivities(new JsonArray());
                 array.add(people);
             }
@@ -149,6 +155,37 @@ public class PeopleDaoImpl implements PeopleDao {
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
             return new JsonArray();
+        }
+
+    }
+    
+    @Override
+    public JsonObject loadSingle(final int id) {
+
+        try (Connection c = DriverManager.getConnection(Database.HSQLDB_URL, Database.HSQLDB_CPAO_USER, Database.HSQLDB_CPAO_PASSWORD)) {
+
+            final Statement s = c.createStatement();
+
+            final ResultSet result = s.executeQuery("SELECT CPAO.PERSON.*, CPAO.HOME_PERSON.ID_HOME AS HOME "
+                    + "FROM CPAO.PERSON, JOIN CPAO.HOME "
+                    + "WHERE CPAO.PERSON.ID_HOME = CPAO.HOME.ID "
+                    + "AND CPAO.PERSON.ID = " + id);
+            final People people = new People();
+
+            while (result.next()) {
+                people.setId(result.getInt("ID"));
+                people.setFirstname(result.getString("FIRSTNAME"));
+                people.setLastname(result.getString("LASTNAME"));
+                people.setBirthDate(result.getLong("BIRTHDAY"));
+                people.setHome(result.getInt("ID_HOME"));
+                people.addActivities(new JsonArray());
+            }
+
+            return people;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseScript.class.getName()).log(Level.SEVERE, null, ex);
+            return new JsonObject();
         }
 
     }

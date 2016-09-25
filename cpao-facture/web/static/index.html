@@ -27,10 +27,13 @@ and open the template in the editor.
         <script type="text/javascript" src="app/util/yearPicker.js"></script>
         <script type="text/javascript" src="app/modal/inputResourceModal.js"></script>
         <script type="text/javascript" src="app/modal/removeResourceModal.js"></script>
-        <script type="text/javascript" src="app/controller/homeBillController.js"></script>
+        <script type="text/javascript" src="app/controller/flowController.js"></script>
+        <script type="text/javascript" src="app/controller/homeOverviewController.js"></script>
+        <script type="text/javascript" src="app/controller/globalOverviewController.js"></script>
         <script type="text/javascript" src="app/controller/RecursiveReaderController.js"></script>
         <script type="text/javascript" src="app/controller/seasonController.js"></script>
         <script type="text/javascript" src="app/controller/inputResourceController.js"></script>
+        <script type="text/javascript" src="app/model/financialOverview.js"></script>
         <script type="text/javascript" src="app/model/resourceBinder.js"></script>
         <script type="text/javascript" src="app/model/datatype/genericDatatype.js"></script>
         <script type="text/javascript" src="app/model/datatype/activity.js"></script>
@@ -88,11 +91,7 @@ and open the template in the editor.
                 <div data-bind="template: { name: 'resourceTemplate' }"></div>
             </div>
             <div id="recap" class="tab-pane fade">
-                <div class="container">
-                    <div class="row">
-                        <h1>Recapitulatif</h1>
-                    </div>
-                </div>
+                <div data-bind="template: { name: 'overviewTemplate', data: controller.overview }"></div>
             </div>
         </div>
 

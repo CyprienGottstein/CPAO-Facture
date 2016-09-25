@@ -76,7 +76,7 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
                     type: "short-string",
                     input: true,
                     show: true,
-                    composite : true
+                    composite: true
                 },
                 bankLabel: {
                     id: "bankLabel",
@@ -84,7 +84,7 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
                     type: "short-string",
                     input: true,
                     show: true,
-                    composite : true
+                    composite: true
                 },
                 paycheck: {
                     id: "paycheck",
@@ -92,7 +92,7 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
                     type: "short-string",
                     input: true,
                     show: true,
-                    composite : true
+                    composite: true
                 },
                 validity: {
                     id: "validity",
@@ -100,7 +100,7 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
                     type: "date",
                     input: true,
                     show: true,
-                    composite : true
+                    composite: true
                 },
                 firstname: {
                     id: "firstname",
@@ -108,7 +108,7 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
                     type: "short-string",
                     input: true,
                     show: true,
-                    composite : true
+                    composite: true
                 },
                 lastname: {
                     id: "lastname",
@@ -116,7 +116,7 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
                     type: "short-string",
                     input: true,
                     show: true,
-                    composite : true
+                    composite: true
                 },
                 birthday: {
                     id: "birthday",
@@ -124,7 +124,7 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
                     type: "date",
                     input: true,
                     show: true,
-                    composite : true
+                    composite: true
                 }
             },
             dependency: "idType",
@@ -216,9 +216,9 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
         self.amount = ko.observable(data.amount);
         self.metadata = ko.observable(data.metadata);
         self.solded = ko.observable(data.solded);
-        
+
         var metadata = JSON.parse(self.metadata());
-        
+
         self.owner = ko.observable(metadata.owner);
         self.bankLabel = ko.observable(metadata.bankLabel);
         self.paycheck = ko.observable(metadata.paycheck);
@@ -226,14 +226,39 @@ function PaymentDatatype($root, $parent, baseDatatype, msg) {
         self.firstname = ko.observable(metadata.firstname);
         self.lastname = ko.observable(metadata.lastname);
         self.birthday = ko.observable();
-        
-        if (metadata.validity){
+
+        if (metadata.validity) {
             self.validity(moment(new Date(metadata.validity)).format('DD/MM/YYYY'));
         }
-        
-        if (metadata.birthday){
+
+        if (metadata.birthday) {
             self.birthday(moment(new Date(metadata.birthday)).format('DD/MM/YYYY'));
         }
+
+        self.reload = function (data) {
+            self.idHome().id(data.idHome);
+            self.season(data.season);
+            self.idType().id(data.idType);
+            self.amount(data.amount);
+            self.solded(data.solded);
+            self.metadata(data.metadata);
+
+            var metadata = JSON.parse(self.metadata());
+
+            self.owner(metadata.owner);
+            self.bankLabel(metadata.bankLabel);
+            self.paycheck(metadata.paycheck);
+            self.firstname(metadata.firstname);
+            self.lastname(metadata.lastname);
+
+            if (metadata.validity) {
+                self.validity(moment(new Date(metadata.validity)).format('DD/MM/YYYY'));
+            }
+
+            if (metadata.birthday) {
+                self.birthday(moment(new Date(metadata.birthday)).format('DD/MM/YYYY'));
+            }
+        };
 
 
         self.rebind = function () {
